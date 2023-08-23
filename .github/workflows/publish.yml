@@ -2,14 +2,24 @@ name: Publish to pub.dev
 
 on:
   push:
-    branches:
-      main
+    branches: main
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "2.5.3" # Replace with the version of Flutter you're using
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Run tests
+        run: flutter test
   publish:
+    needs: test
     permissions:
       id-token: write # Required for authentication using OIDC
     uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
     with:
       environment: pub.dev
-  
-  
