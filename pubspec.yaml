@@ -1,5 +1,7 @@
 name: anydrawer
-description: A flutter package to let you show drawer any where.
+description:
+  A flutter package to show drawer from any where in the app by providing context.
+  It eliminates the need to use scaffold to show drawer.
 version: 1.0.0
 homepage: https://github.com/oi-narendra/anydrawer
 
