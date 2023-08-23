@@ -3,16 +3,21 @@ import 'package:flutter/rendering.dart';
 
 /// Configuration for the drawer.
 /// [constraints] is the constraints for the drawer. If not specified, the
-/// default constraints will be used which is
-/// `BoxConstraints.tight(Size(300, double.infinity))`.
+/// default constraints will be used.
+///
 /// [closeOnClickOutside] is whether the drawer should be closed when the user
 /// clicks outside the drawer. Defaults to `true`.
+///
 /// [backdropOpacity] is the opacity of the backdrop. Defaults to `0.4`.
+///
 /// [dragEnabled] is whether the user can drag the drawer from the edge of
 /// the screen. Defaults to `false`.
+///
 /// [maxDragExtent] is the maximum extent the user can drag the drawer. Defaults
 /// to `300`.
+///
 /// [side] is the side of the drawer. Defaults to [DrawerSide.right].
+///
 /// [closeOnEscapeKey] is whether the drawer should be closed when the user
 /// presses the escape key. Defaults to `true`.
 class DrawerConfig {
@@ -25,10 +30,15 @@ class DrawerConfig {
     this.maxDragExtent = 300,
     this.side = DrawerSide.right,
     this.closeOnEscapeKey = true,
+    this.borderRadius = 20,
     this.animationDuration = const Duration(milliseconds: 300),
-  }) : assert(
+  })  : assert(
           backdropOpacity >= 0 && backdropOpacity <= 1,
           'backdropOpacity must be between 0 and 1',
+        ),
+        assert(
+          borderRadius >= 0,
+          'borderRadius must be greater than or equal to 0',
         );
 
   /// The constraints for the drawer.
@@ -56,6 +66,9 @@ class DrawerConfig {
   /// Close on Escape key
   final bool? closeOnEscapeKey;
 
+  /// Border radius
+  final double borderRadius;
+
   /// copyWith method
   DrawerConfig copyWith({
     BoxConstraints? constraints,
@@ -66,6 +79,7 @@ class DrawerConfig {
     DrawerSide? side,
     bool? closeOnEscapeKey,
     Duration? animationDuration,
+    double? borderRadius,
   }) {
     return DrawerConfig(
       constraints: constraints ?? this.constraints,
@@ -76,6 +90,7 @@ class DrawerConfig {
       side: side ?? this.side,
       closeOnEscapeKey: closeOnEscapeKey ?? this.closeOnEscapeKey,
       animationDuration: animationDuration ?? this.animationDuration,
+      borderRadius: borderRadius ?? this.borderRadius,
     );
   }
 

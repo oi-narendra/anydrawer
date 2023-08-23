@@ -6,12 +6,38 @@ import 'package:flutter/services.dart';
 /// The [context] is the build context
 typedef DrawerBuilder = Widget Function(BuildContext context);
 
-/// Public function to show the drawer.
-/// The [context] is the build context.
-/// The [builder] is the drawer builder.
-/// The [config] is the drawer configuration.
-/// The [onOpen] is the callback function when the drawer is opened.
-/// The [onClose] is the callback function when the drawer is closed.
+/// anydrawer is a package that allows you to show a drawer from any horizontal
+/// side of the screen. You can also customize the drawer. This package removes
+/// the limitation of the default scaffold drawer which can only be shown from
+/// the scaffold. Just call the [showDrawer] function to show the drawer. You
+/// can also specify the [DrawerConfig] to customize the drawer.
+///
+/// [context] is the build context.
+///
+/// [builder] is the drawer builder.
+///
+/// [config] is the drawer configuration.
+///
+/// [onOpen] is the callback function when the drawer is opened.
+///
+/// [onClose] is the callback function when the drawer is closed.
+///
+/// Example:
+/// ```dart
+/// showDrawer(
+///  context,
+/// builder: (context) {
+///   return const Center(
+///    child: Text('Left Drawer'),
+///  );
+/// },
+/// config: const DrawerConfig(
+///  side: DrawerSide.left,
+/// closeOnClickOutside: true,
+/// ),
+/// );
+/// ```
+///
 void showDrawer(
   BuildContext context, {
   required DrawerBuilder builder,
@@ -66,10 +92,12 @@ OverlayEntry _buildOverlayEntry(
     widthMultiplier = 0.5;
   }
 
+  final width = size.width * widthMultiplier;
+
   // Get the constraints
   final constraints = config.constraints ??
       BoxConstraints.tightFor(
-        width: size.width * widthMultiplier,
+        width: width,
         height: size.height,
       );
 
@@ -116,8 +144,7 @@ OverlayEntry _buildOverlayEntry(
         onHorizontalDragUpdate: (details) {
           if (config.dragEnabled == false) return;
 
-          animationController.value +=
-              details.primaryDelta! / constraints.maxWidth;
+          animationController.value += details.primaryDelta! / width;
         },
         onHorizontalDragEnd: (details) {
           if (animationController.value < 0.5) {
@@ -151,7 +178,25 @@ OverlayEntry _buildOverlayEntry(
             ),
             child: Container(
               constraints: constraints,
-              child: Drawer(child: builder(context)),
+              child: Drawer(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: config.side == DrawerSide.left
+                        ? Radius.zero
+                        : Radius.circular(config.borderRadius),
+                    topRight: config.side == DrawerSide.left
+                        ? Radius.circular(config.borderRadius)
+                        : Radius.zero,
+                    bottomLeft: config.side == DrawerSide.left
+                        ? Radius.zero
+                        : Radius.circular(config.borderRadius),
+                    bottomRight: config.side == DrawerSide.left
+                        ? Radius.circular(config.borderRadius)
+                        : Radius.zero,
+                  ),
+                ),
+                child: builder(context),
+              ),
             ),
           ),
         ),
@@ -171,6 +216,7 @@ OverlayEntry _buildOverlayEntry(
         onWillPop: () {
           debugPrint('onWillPop');
 
+          // TODO(oi-narendra): fix back button issue.
           return Future.value(false);
         },
         child: Stack(

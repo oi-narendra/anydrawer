@@ -34,12 +34,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DrawerConfig config = const DrawerConfig();
 
-  void _showDrawer(BuildContext context) {
+  void _showDrawer() {
     showDrawer(
       context,
       builder: (context) {
-        return const Center(
-          child: Text('Left Drawer'),
+        return Center(
+          child: config.side == DrawerSide.left
+              ? const Text('Left Drawer')
+              : const Text('Right Drawer'),
         );
       },
       config: config,
@@ -106,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                _showDrawer(context);
+                _showDrawer();
               },
               child: const Text('Show Drawer'),
             ),
