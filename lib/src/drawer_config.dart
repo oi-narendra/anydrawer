@@ -39,6 +39,10 @@ class DrawerConfig {
         assert(
           borderRadius >= 0,
           'borderRadius must be greater than or equal to 0',
+        ),
+        assert(
+          (closeOnClickOutside ?? true) || (closeOnEscapeKey ?? true),
+          'both closeOnClickOutside and closeOnEscapeKey cannot be false',
         );
 
   /// The constraints for the drawer.

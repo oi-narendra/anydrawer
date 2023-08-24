@@ -110,11 +110,14 @@ OverlayEntry _buildOverlayEntry(
   late OverlayEntry drawerOverlayEntry;
 
   // close drawer method
-  void closeDrawer() {
+  void closeDrawer({bool escapeKey = false}) {
     if (animationController.isAnimating) return;
 
-    if (config.closeOnClickOutside == false &&
-        config.closeOnEscapeKey == false) {
+    if (escapeKey && config.closeOnEscapeKey == false) {
+      return;
+    }
+
+    if (!escapeKey && config.closeOnClickOutside == false) {
       return;
     }
 
@@ -144,7 +147,11 @@ OverlayEntry _buildOverlayEntry(
         onHorizontalDragUpdate: (details) {
           if (config.dragEnabled == false) return;
 
-          animationController.value += details.primaryDelta! / width;
+          final delta = details.primaryDelta!;
+          final position = animationController.value;
+          final newPosition = position +
+              delta / width * (config.side == DrawerSide.left ? 1 : -1);
+          animationController.value = newPosition.clamp(0, 1);
         },
         onHorizontalDragEnd: (details) {
           if (animationController.value < 0.5) {
@@ -208,7 +215,7 @@ OverlayEntry _buildOverlayEntry(
 
       RawKeyboard.instance.addListener((event) {
         if (event.logicalKey == LogicalKeyboardKey.escape) {
-          closeDrawer();
+          closeDrawer(escapeKey: true);
         }
       });
 

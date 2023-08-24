@@ -46,6 +46,12 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
    );
    ```
 
+## Screenshots
+
+[<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample1.gif" width="300"/>]
+
+[<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample2.gif" width="300"/>]
+
 ### Parameters
 
 The `showDrawer` function takes the following parameters:
