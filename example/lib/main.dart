@@ -114,6 +114,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             const SizedBox(height: 20),
+            TextFormField(
+              initialValue: config.borderRadius.toString(),
+              onChanged: (value) {
+                setState(() {
+                  config = config.copyWith(borderRadius: double.parse(value));
+                });
+              },
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Border Radius',
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             CheckboxListTile(
               title: const Text('Close on click outside'),
               value: config.closeOnClickOutside,
