@@ -43,6 +43,7 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
      onClose: () {
        // Optional callback when the drawer is closed
      },
+     controller: drawerController, // Optional controller to programmatically close the drawer
    );
    ```
 
@@ -61,6 +62,9 @@ The `showDrawer` function takes the following parameters:
 - `config`: A [DrawerConfig](#drawerconfig) object that allows you to customize the behavior and appearance of the drawer.
 - `onOpen`: An optional callback that is called when the drawer is opened.
 - `onClose`: An optional callback that is called when the drawer is closed.
+- `controller`: A [AnyDrawerController](#anydrawercontroller) object that can be used to programmatically close the drawer.
+
+Note: The `controller` should be disposed of when it is no longer needed. This can be done by calling the `dispose` method of the controller. It is not automatically disposed of when the drawer is closed.
 
 #### <a name="drawerconfig"></a>DrawerConfig has the following properties:
 
@@ -81,57 +85,6 @@ The package includes smooth animations and interactive gestures for opening and 
 
 - Drag the drawer to open or close it (can be disabled using `dragEnabled`).
 - The drawer smoothly slides in and out from the specified side with customizable animations.
-
-## Example
-
-Here's an example of how to use the `anydrawer` package to show a drawer from the left side of the screen:
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:anydrawer/anydrawer.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('anydrawer Example'),
-        ),
-        body: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              showDrawer(
-                context,
-                builder: (context) {
-                  return const Center(
-                    child: Text('Left Drawer Content'),
-                  );
-                },
-                config: const DrawerConfig(
-                  side: DrawerSide.left,
-                  closeOnClickOutside: true,
-                ),
-                onOpen: () {
-                  print('Drawer opened');
-                },
-                onClose: () {
-                  print('Drawer closed');
-                },
-              );
-            },
-            child: Text('Open Drawer'),
-          ),
-        ),
-      ),
-    );
-  }
-}
-```
 
 ## Contributing
 

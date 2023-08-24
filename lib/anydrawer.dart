@@ -9,5 +9,6 @@
 library anydrawer;
 
 export 'src/anydrawer.dart';
+export 'src/anydrawer_controller.dart';
 export 'src/drawer_config.dart';
 export 'src/drawer_side.dart';

@@ -22,6 +22,11 @@ typedef DrawerBuilder = Widget Function(BuildContext context);
 ///
 /// [onClose] is the callback function when the drawer is closed.
 ///
+/// [controller] is the drawer controller.
+/// Use this controller to close the drawer programmatically.
+/// It is users responsibility to dispose the controller when it is no longer
+/// needed.
+///
 /// Example:
 /// ```dart
 /// showDrawer(
@@ -44,6 +49,7 @@ void showDrawer(
   void Function()? onOpen,
   void Function()? onClose,
   DrawerConfig? config,
+  AnyDrawerController? controller,
 }) {
   // Get overlay state
   final overlayState = Overlay.of(context);
@@ -60,6 +66,7 @@ void showDrawer(
       onClose?.call();
     },
     config,
+    controller,
   );
 
   // Insert the drawer
@@ -78,6 +85,7 @@ OverlayEntry _buildOverlayEntry(
   void Function()? onOpen,
   void Function() onClose,
   DrawerConfig config,
+  AnyDrawerController? controller,
 ) {
   // Get the size of the screen
   final size = MediaQuery.sizeOf(context);
@@ -121,6 +129,14 @@ OverlayEntry _buildOverlayEntry(
           ..dispose();
       }
       onClose.call();
+    });
+  }
+
+  if (controller != null) {
+    controller.addListener(() {
+      if (controller.value) return;
+
+      closeDrawer();
     });
   }
 
@@ -214,8 +230,6 @@ OverlayEntry _buildOverlayEntry(
 
       return WillPopScope(
         onWillPop: () {
-          debugPrint('onWillPop');
-
           // TODO(oi-narendra): fix back button issue.
           return Future.value(false);
         },

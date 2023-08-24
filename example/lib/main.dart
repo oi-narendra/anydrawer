@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anydrawer/anydrawer.dart';
 import 'package:flutter/material.dart';
 
@@ -34,6 +36,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DrawerConfig config = const DrawerConfig();
 
+  final AnyDrawerController controller = AnyDrawerController();
+
   void _showDrawer() {
     showDrawer(
       context,
@@ -45,7 +49,18 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
       config: config,
+      onClose: () {
+        debugPrint('Drawer closed');
+      },
+      onOpen: () {
+        debugPrint('Drawer opened');
+      },
+      controller: controller,
     );
+
+    Timer(const Duration(seconds: 5), () {
+      controller.close();
+    });
   }
 
   @override
