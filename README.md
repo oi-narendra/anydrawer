@@ -10,7 +10,7 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
 
    ```yaml
    dependencies:
-     anydrawer: ^1.0.0 # Replace with the latest version
+     anydrawer: ^1.0.1 # Replace with the latest version
    ```
 
 2. Run `flutter pub get` to fetch the package.
@@ -48,7 +48,7 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
 
 ## Screenshots
 
-[<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample1.gif" width="300"/>]
+[<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample1.gif" width="700"/>]
 
 [<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample2.gif" width="300"/>]
 
@@ -64,34 +64,7 @@ The `showDrawer` function takes the following parameters:
 
 #### <a name="drawerconfig"></a>DrawerConfig has the following properties:
 
-- `constraints`: Set the constraints of the drawer. This can be used to set the width of the drawer.
-  The following example shows how to set the width of the drawer to 30% of the screen width on desktop, 50% on tablets, and 80% on mobile devices which is the default:
-
-```dart
-
-// Get the size of the screen
-final size = MediaQuery.of(context).size;
-
-// width multiplier
-var widthMultiplier = 0.3;
-
-// Get width multiplier based on the screen size
-if (size.width < 600) {
-    widthMultiplier = 0.8;
-} else if (size.width < 900) {
-    widthMultiplier = 0.5;
-}
-
-final width = size.width \* widthMultiplier;
-
-// Get the constraints
-final constraints = BoxConstraints.tightFor(
-                    width: width,
-                    height: size.height,
-                    );
-
-```
-
+- `widthPercentage`: Set the width of the drawer as a percentage of the screen width.
 - `maxDragExtent`: Set the maximum extent to which the drawer can be dragged open.
 - `side`: Specify the side from which the drawer should appear (`DrawerSide.left` or `DrawerSide.right`).
 - `closeOnClickOutside`: Determine whether the drawer should close when clicking outside of it.

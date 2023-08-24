@@ -50,10 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        width: MediaQuery.of(context).size.width / 2,
+        width: width > 600 ? width / 2 : width,
         child: Column(
           children: [
             const SizedBox(height: 50),
@@ -80,36 +82,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             const SizedBox(height: 20),
-            DropdownButtonFormField<BoxConstraints>(
+            DropdownButtonFormField<double>(
               isExpanded: true,
-              value: config.constraints ??
-                  BoxConstraints.tightFor(
-                      width: MediaQuery.of(context).size.width * 0.3),
+              value: config.widthPercentage ?? 0.3,
               onChanged: (value) {
                 setState(() {
-                  config = config.copyWith(constraints: value);
+                  config = config.copyWith(widthPercentage: value);
                 });
               },
-              items: [
+              items: const [
                 DropdownMenuItem(
-                  value: BoxConstraints.tightFor(
-                      width: MediaQuery.of(context).size.width * 0.3),
-                  child: const Text('Width: 30%'),
+                  value: 0.3,
+                  child: Text('Width: 30%'),
                 ),
                 DropdownMenuItem(
-                  value: BoxConstraints.tightFor(
-                      width: MediaQuery.of(context).size.width * 0.5),
-                  child: const Text('Width: 50%'),
+                  value: 0.5,
+                  child: Text('Width: 50%'),
                 ),
                 DropdownMenuItem(
-                  value: BoxConstraints.tightFor(
-                      width: MediaQuery.of(context).size.width * 0.7),
-                  child: const Text('Width: 70%'),
+                  value: 0.7,
+                  child: Text('Width: 70%'),
                 ),
                 DropdownMenuItem(
-                  value: BoxConstraints.tightFor(
-                      width: MediaQuery.of(context).size.width * 0.9),
-                  child: const Text('Width: 90%'),
+                  value: 0.8,
+                  child: Text('Width: 90%'),
                 ),
               ],
             ),

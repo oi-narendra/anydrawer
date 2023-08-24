@@ -1,9 +1,9 @@
 import 'package:anydrawer/src/drawer_side.dart';
-import 'package:flutter/rendering.dart';
 
 /// Configuration for the drawer.
-/// [constraints] is the constraints for the drawer. If not specified, the
-/// default constraints will be used.
+/// [widthPercentage] is the width for the drawer. If not specified, the
+/// default width will be used which is 0.8 for mobile, 0.3 for desktop and 0.5
+/// for tablet.
 ///
 /// [closeOnClickOutside] is whether the drawer should be closed when the user
 /// clicks outside the drawer. Defaults to `true`.
@@ -23,7 +23,7 @@ import 'package:flutter/rendering.dart';
 class DrawerConfig {
   /// Constructs a new [DrawerConfig].
   const DrawerConfig({
-    this.constraints,
+    this.widthPercentage,
     this.closeOnClickOutside = true,
     this.backdropOpacity = 0.4,
     this.dragEnabled = false,
@@ -33,6 +33,11 @@ class DrawerConfig {
     this.borderRadius = 20,
     this.animationDuration = const Duration(milliseconds: 300),
   })  : assert(
+          widthPercentage == null ||
+              (widthPercentage >= 0.1 && widthPercentage <= 0.99),
+          'widthPercentage must be between 0.1 and 0.99',
+        ),
+        assert(
           backdropOpacity >= 0 && backdropOpacity <= 1,
           'backdropOpacity must be between 0 and 1',
         ),
@@ -45,8 +50,10 @@ class DrawerConfig {
           'both closeOnClickOutside and closeOnEscapeKey cannot be false',
         );
 
-  /// The constraints for the drawer.
-  final BoxConstraints? constraints;
+  /// The width percentage of the drawer.
+  /// It is used to calculate the width of the drawer based on the width of the
+  /// screen.
+  final double? widthPercentage;
 
   /// Whether the drawer should be closed when the user clicks outside the
   /// drawer.
@@ -75,7 +82,7 @@ class DrawerConfig {
 
   /// copyWith method
   DrawerConfig copyWith({
-    BoxConstraints? constraints,
+    double? widthPercentage,
     bool? closeOnClickOutside,
     double? backdropOpacity,
     bool? enableEdgeDrag,
@@ -86,7 +93,7 @@ class DrawerConfig {
     double? borderRadius,
   }) {
     return DrawerConfig(
-      constraints: constraints ?? this.constraints,
+      widthPercentage: widthPercentage ?? this.widthPercentage,
       closeOnClickOutside: closeOnClickOutside ?? this.closeOnClickOutside,
       backdropOpacity: backdropOpacity ?? this.backdropOpacity,
       dragEnabled: enableEdgeDrag ?? dragEnabled,
@@ -101,7 +108,7 @@ class DrawerConfig {
   @override
   String toString() {
     return '''
-      DrawerConfig(constraints: $constraints,
+      DrawerConfig(widthPercentage: $widthPercentage,
         closeOnClickOutside: $closeOnClickOutside, 
         backdropOpacity: $backdropOpacity,
         enableEdgeDrag: $dragEnabled, maxDragExtent: $maxDragExtent)

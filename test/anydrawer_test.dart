@@ -226,7 +226,7 @@ showDrawer should not close the drawer on escape key
 
   testWidgets('''
 showDrawer should not close the drawer on click outside
-      when closeOnClickOutside is false''', (
+when closeOnClickOutside is false''', (
     WidgetTester tester,
   ) async {
     // Build a MaterialApp with a Scaffold
@@ -272,8 +272,7 @@ showDrawer should not close the drawer on click outside
     expect(find.text('Test Drawer'), findsOneWidget);
   });
 
-  testWidgets('showDrawer should constrain the drawer to the given constraints',
-      (
+  testWidgets('showDrawer should constrain the drawer to the given width', (
     WidgetTester tester,
   ) async {
     // Build a MaterialApp with a Scaffold
@@ -292,12 +291,7 @@ showDrawer should not close the drawer on click outside
                       );
                     },
                     config: const DrawerConfig(
-                      constraints: BoxConstraints(
-                        minWidth: 200,
-                        maxWidth: 300,
-                        minHeight: 100,
-                        maxHeight: 200,
-                      ),
+                      widthPercentage: 0.5,
                     ),
                   );
                 },
@@ -313,7 +307,7 @@ showDrawer should not close the drawer on click outside
     await tester.tap(find.text('Show Drawer'));
     await tester.pumpAndSettle();
 
-    // Verify that the drawer is shown with the given constraints
+    // Verify that the drawer is shown with the given width
     expect(
       tester
           .widget<Container>(
@@ -323,11 +317,9 @@ showDrawer should not close the drawer on click outside
             ),
           )
           .constraints,
-      const BoxConstraints(
-        minWidth: 200,
-        maxWidth: 300,
-        minHeight: 100,
-        maxHeight: 200,
+      const BoxConstraints.tightFor(
+        width: 400,
+        height: 600,
       ),
     );
   });

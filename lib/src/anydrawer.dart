@@ -80,26 +80,19 @@ OverlayEntry _buildOverlayEntry(
   DrawerConfig config,
 ) {
   // Get the size of the screen
-  final size = MediaQuery.of(context).size;
+  final size = MediaQuery.sizeOf(context);
 
   // width multiplier
-  var widthMultiplier = 0.3;
-
-  // Get width multiplier based on the screen size
-  if (size.width < 600) {
-    widthMultiplier = 0.8;
-  } else if (size.width < 900) {
-    widthMultiplier = 0.5;
-  }
+  final widthMultiplier =
+      config.widthPercentage ?? _getDefaultWidthPercentage(size);
 
   final width = size.width * widthMultiplier;
 
   // Get the constraints
-  final constraints = config.constraints ??
-      BoxConstraints.tightFor(
-        width: width,
-        height: size.height,
-      );
+  final constraints = BoxConstraints.tightFor(
+    width: width,
+    height: size.height,
+  );
 
   // animation controller
   final animationController = AnimationController(
@@ -235,4 +228,18 @@ OverlayEntry _buildOverlayEntry(
       );
     },
   );
+}
+
+/// Private function to get the default width percentage.
+/// The [size] is the size of the screen.
+/// Returns the default width percentage.
+
+double _getDefaultWidthPercentage(Size size) {
+  if (size.width < 500) {
+    return 0.8;
+  } else if (size.width < 900) {
+    return 0.5;
+  } else {
+    return 0.3;
+  }
 }
