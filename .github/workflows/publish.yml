@@ -2,7 +2,8 @@ name: Publish to pub.dev
 
 on:
   push:
-    branches: main
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*" # tag-pattern on pub.dev: 'v'
 jobs:
   test:
     runs-on: ubuntu-latest
