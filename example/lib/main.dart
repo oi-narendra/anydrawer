@@ -13,15 +13,54 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Any Drawer Example',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Any Drawer Example App'),
+      routerDelegate: AnyDrawerRouterDelegate(
+        builder: (context) => const MyHomePage(title: 'Any Drawer Example'),
+      ),
     );
   }
+}
+
+class AnyDrawerRouterDelegate extends RouterDelegate<Uri>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<Uri> {
+  AnyDrawerRouterDelegate({required this.builder});
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+      key: navigatorKey,
+      pages: [
+        MaterialPage(
+          child: builder(context),
+        ),
+      ],
+      onPopPage: (route, result) {
+        if (!route.didPop(result)) {
+          return false;
+        }
+
+        notifyListeners();
+
+        return true;
+      },
+    );
+  }
+
+  @override
+  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
+
+  @override
+  Uri? get currentConfiguration => null;
+
+  @override
+  Future<void> setNewRoutePath(Uri configuration) async {}
 }
 
 class MyHomePage extends StatefulWidget {

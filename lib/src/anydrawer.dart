@@ -222,23 +222,45 @@ OverlayEntry _buildOverlayEntry(
         onOpen?.call();
       });
 
-      RawKeyboard.instance.addListener((event) {
-        if (event.logicalKey == LogicalKeyboardKey.escape) {
-          closeDrawer(escapeKey: true);
-        }
-      });
+      if (config.closeOnEscapeKey ?? true) {
+        RawKeyboard.instance.addListener((event) {
+          if (event.logicalKey == LogicalKeyboardKey.escape) {
+            closeDrawer(escapeKey: true);
+          }
+        });
+      }
 
-      return WillPopScope(
-        onWillPop: () {
-          // TODO(oi-narendra): fix back button issue.
-          return Future.value(false);
-        },
-        child: Stack(
-          children: [
-            backdrop,
-            drawer,
-          ],
-        ),
+      if (config.closeOnResume) {
+        SystemChannels.lifecycle.setMessageHandler((message) {
+          if (message == AppLifecycleState.resumed.toString()) {
+            closeDrawer();
+          }
+
+          return Future.value();
+        });
+      }
+
+      if (config.closeOnBackButton) {
+        final rootBackDispatcher = Router.of(context).backButtonDispatcher;
+
+        debugPrint('Root back dispatcher: $rootBackDispatcher');
+
+        if (rootBackDispatcher != null) {
+          rootBackDispatcher.createChildBackButtonDispatcher()
+            ..addCallback(() {
+              closeDrawer();
+
+              return Future.value(true);
+            })
+            ..takePriority();
+        }
+      }
+
+      return Stack(
+        children: [
+          backdrop,
+          drawer,
+        ],
       );
     },
   );

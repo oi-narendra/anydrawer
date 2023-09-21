@@ -20,6 +20,13 @@ import 'package:anydrawer/src/drawer_side.dart';
 ///
 /// [closeOnEscapeKey] is whether the drawer should be closed when the user
 /// presses the escape key. Defaults to `true`.
+///
+/// [closeOnResume] is a boolean value that indicates whether the drawer should
+/// be closed when the app resumes from background. Defaults to `true`.
+///
+/// [closeOnBackButton] is a boolean value that indicates whether the drawer
+/// should be closed when the user presses the back button on Android. Defaults
+/// to `false`.
 class DrawerConfig {
   /// Constructs a new [DrawerConfig].
   const DrawerConfig({
@@ -31,6 +38,8 @@ class DrawerConfig {
     this.side = DrawerSide.right,
     this.closeOnEscapeKey = true,
     this.borderRadius = 20,
+    this.closeOnResume = false,
+    this.closeOnBackButton = false,
     this.animationDuration = const Duration(milliseconds: 300),
   })  : assert(
           widthPercentage == null ||
@@ -79,6 +88,12 @@ class DrawerConfig {
 
   /// Border radius
   final double borderRadius;
+
+  /// Close on resume
+  final bool closeOnResume;
+
+  /// Close on back button
+  final bool closeOnBackButton;
 
   /// copyWith method
   DrawerConfig copyWith({

@@ -1,11 +1,11 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/usr/local/Caskroom/flutter/3.10.1/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/nirajbhatt/anydrawer"
+export "FLUTTER_ROOT=/Users/nirajbhatt/fvm/versions/3.7.9"
+export "FLUTTER_APPLICATION_PATH=/Users/nirajbhatt/flutter/packages/anydrawer"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=0.0.1"
-export "FLUTTER_BUILD_NUMBER=0.0.1"
+export "FLUTTER_BUILD_NAME=1.0.2"
+export "FLUTTER_BUILD_NUMBER=1.0.2"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"
