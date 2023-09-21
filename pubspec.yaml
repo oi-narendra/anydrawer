@@ -28,7 +28,7 @@ flutter: null
 #
 
 screenshots:
-  - description: "Example in web"
-    path: screenshots/sample1.gif
-  - description: "Examples in mobile"
-    path: screenshots/sample2.gif
+  - description: "Example in mobile"
+    path: screenshots/scnsht1.png
+  - description: "Examples in Web"
+    path: screenshots/scnsht2.png
