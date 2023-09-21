@@ -10,7 +10,7 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
 
    ```yaml
    dependencies:
-     anydrawer: ^1.0.1 # Replace with the latest version
+     anydrawer: ^1.0.3 # Replace with the latest version
    ```
 
 2. Run `flutter pub get` to fetch the package.
@@ -36,6 +36,11 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
      config: const DrawerConfig(
        side: DrawerSide.left,
        closeOnClickOutside: true,
+       closeOnEscapeKey: true,
+       closeOnResume: true, // (Android only)
+       closeOnBackButton: true, // (Requires a route navigator)
+       backdropOpacity: 0.5,
+       borderRadius: 24,
      ),
      onOpen: () {
        // Optional callback when the drawer is opened
@@ -55,29 +60,39 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
 
 ### Parameters
 
-The `showDrawer` function takes the following parameters:
+| Parameter                      | Type                            | Description                                                                                          |
+| ------------------------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `context`                      | `BuildContext`                  | The build context of the widget that is calling the function.                                        |
+| `builder`                      | `Widget Function(BuildContext)` | A builder function that returns the widget tree to be displayed inside the drawer.                   |
+| `config`                       | `DrawerConfig`                  | A `DrawerConfig` object that allows you to customize the behavior and appearance of the drawer.      |
+| `onOpen`                       | `void Function()`               | An optional callback that is called when the drawer is opened.                                       |
+| `onClose`                      | `void Function()`               | An optional callback that is called when the drawer is closed.                                       |
+| `closeOnEscapeKey`             | `bool`                          | An optional boolean that determines whether the drawer should close when the Escape key is pressed.  |
+| `closeOnResume` (Android only) | `bool`                          | An optional boolean that determines whether the drawer should close when the app is resumed.         |
+| `closeOnBackButton`            | `bool`                          | An optional boolean that determines whether the drawer should close when the back button is pressed. |
+| `controller`                   | `AnyDrawerController`           | A `AnyDrawerController` object that can be used to programmatically close the drawer.                |
 
-- `context`: The build context of the widget that is calling the function.
-- `builder`: A builder function that returns the widget tree to be displayed inside the drawer.
-- `config`: A [DrawerConfig](#drawerconfig) object that allows you to customize the behavior and appearance of the drawer.
-- `onOpen`: An optional callback that is called when the drawer is opened.
-- `onClose`: An optional callback that is called when the drawer is closed.
-- `controller`: A [AnyDrawerController](#anydrawercontroller) object that can be used to programmatically close the drawer.
+> **Note:** ⚠️ The `controller` should be disposed of when it is no longer needed. This can be done by calling the `dispose` method of the controller. It is not automatically disposed of when the drawer is closed. ⚠️
 
-Note: The `controller` should be disposed of when it is no longer needed. This can be done by calling the `dispose` method of the controller. It is not automatically disposed of when the drawer is closed.
+> **Note:** ⚠️ The `closeOnResume` is only applicable on Android devices. ⚠️
+> For `closeOnBackButton` to work, the app should have a route navigator. If the app does not have a route navigator, it will throw an error.
 
 #### <a name="drawerconfig"></a>DrawerConfig has the following properties:
 
-- `widthPercentage`: Set the width of the drawer as a percentage of the screen width.
-- `maxDragExtent`: Set the maximum extent to which the drawer can be dragged open.
-- `side`: Specify the side from which the drawer should appear (`DrawerSide.left` or `DrawerSide.right`).
-- `closeOnClickOutside`: Determine whether the drawer should close when clicking outside of it.
-- `closeOnEscapeKey`: Determine whether the drawer should close when the Escape key is pressed.
-- `dragEnabled`: Allow users to drag the drawer to open and close it.
-- `backdropOpacity`: Set the opacity of the backdrop that appears behind the drawer.
-- `borderRadius`: Adjust the corner radius of the drawer.
+| Property              | Type           | Description                                                                                     |
+| --------------------- | -------------- | ----------------------------------------------------------------------------------------------- |
+| `widthPercentage`     | `double`       | Set the width of the drawer as a percentage of the screen width.                                |
+| `maxDragExtent`       | `double`       | Set the maximum extent to which the drawer can be dragged open.                                 |
+| `side`                | `DrawerSide`   | Specify the side from which the drawer should appear (`DrawerSide.left` or `DrawerSide.right`). |
+| `closeOnClickOutside` | `bool`         | Determine whether the drawer should close when clicking outside of it.                          |
+| `closeOnEscapeKey`    | `bool`         | Determine whether the drawer should close when the Escape key is pressed.                       |
+| `closeOnResume`       | `bool`         | Determine whether the drawer should close when the app is resumed **Android only**.             |
+| `closeOnBackButton`   | `bool`         | Determine whether the drawer should close when the back button is pressed **Android Only**.     |
+| `dragEnabled`         | `bool`         | Allow users to drag the drawer to open and close it.                                            |
+| `backdropOpacity`     | `double`       | Set the opacity of the backdrop that appears behind the drawer.                                 |
+| `borderRadius`        | `BorderRadius` | Adjust the corner radius of the drawer.                                                         |
 
-This information provides an overview of the `showDrawer` function and the customizable properties of the `DrawerConfig` object, allowing you to create and control drawers in your Flutter application with ease.
+I hope this helps! Let me know if you have any further questions.
 
 ### Animation and Interaction
 
