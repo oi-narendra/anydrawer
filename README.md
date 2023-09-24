@@ -107,7 +107,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## TODO
 
-- [ ] Fix issue with drawer not closing when backbutton is pressed on mobile devices.
+- [x] Fix issue with drawer not closing when backbutton is pressed on mobile devices.
 
 ## License
 
