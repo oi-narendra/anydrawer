@@ -4,11 +4,7 @@ description:
 
   Say goodbye to the constraints of using a scaffold to show a drawer.
 
-  With this package, you gain the flexibility to display a drawer from any point in your app, enhancing your app's navigation and user experience.
-  Whether you're building a complex app with numerous screens or a simple one with a few, this package is designed to make your development process smoother and your app more user-friendly.
-
   Try it today and experience the difference!
-
 version: 1.0.4
 homepage: https://github.com/oi-narendra/anydrawer
 

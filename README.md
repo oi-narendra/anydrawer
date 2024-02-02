@@ -1,6 +1,11 @@
 # Anydrawer
 
-# Anydrawer
+[![Pub Version](https://img.shields.io/pub/v/anydrawer)](https://pub.dev/packages/anydrawer)
+[![License](https://img.shields.io/github/license/oi-narendra/anydrawer)](https://github.com/oi-narendra/anydrawer/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/oi-narendra/anydrawer)]()
+[![Very Good Analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
 
 Introducing a revolutionary Flutter package that allows you to display a drawer from anywhere within your app, simply by providing context.
 
