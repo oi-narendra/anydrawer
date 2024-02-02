@@ -54,6 +54,7 @@ void main() {
                 onPressed: () {
                   showDrawer(
                     context,
+                    config: const DrawerConfig(),
                     builder: (context) {
                       return const Center(
                         child: Text('Test Drawer'),

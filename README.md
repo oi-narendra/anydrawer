@@ -1,6 +1,15 @@
 # Anydrawer
 
-The `anydrawer` package allows you to easily show a customizable drawer from any horizontal side of the screen in your Flutter applications. Unlike the default scaffold drawer that can only be shown from the scaffold itself, this package provides the flexibility to display drawers from various parts of your app's UI. The package includes a `showDrawer` function that facilitates the process of displaying the drawer, and you can also customize the drawer's appearance and behavior using the `DrawerConfig` class.
+# Anydrawer
+
+Introducing a revolutionary Flutter package that allows you to display a drawer from anywhere within your app, simply by providing context.
+
+Say goodbye to the constraints of using a scaffold to show a drawer.
+
+With this package, you gain the flexibility to display a drawer from any point in your app, enhancing your app's navigation and user experience.
+Whether you're building a complex app with numerous screens or a simple one with a few, this package is designed to make your development process smoother and your app more user-friendly.
+
+Try it today and experience the difference!
 
 ## Installation
 
@@ -10,7 +19,7 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
 
    ```yaml
    dependencies:
-     anydrawer: ^1.0.3 # Replace with the latest version
+     anydrawer: ^1.0.4 # Replace with the latest version
    ```
 
 2. Run `flutter pub get` to fetch the package.

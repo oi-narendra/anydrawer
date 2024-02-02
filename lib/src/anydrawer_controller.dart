@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 /// This class is used to close the drawer.
 class AnyDrawerController extends ValueNotifier<bool> {
   /// any drawer controller constructor
-  AnyDrawerController({bool isOpened = true}) : super(isOpened);
+  AnyDrawerController() : super(false);
 
   /// close the drawer
   void close() {
     value = false;
+    notifyListeners();
   }
 }

@@ -80,13 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _showDrawer() {
     showDrawer(
       context,
-      builder: (context) {
-        return Center(
-          child: config.side == DrawerSide.left
-              ? const Text('Left Drawer')
-              : const Text('Right Drawer'),
-        );
-      },
+      builder: (context) => const SurveryForm(),
       config: config,
       onClose: () {
         debugPrint('Drawer closed');
@@ -96,10 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       controller: controller,
     );
-
-    Timer(const Duration(seconds: 5), () {
-      controller.close();
-    });
   }
 
   @override
@@ -226,6 +216,64 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SurveryForm extends StatelessWidget {
+  const SurveryForm({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          Text('Survey Form', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 20),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Name',
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Email',
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Submit'),
+          ),
+        ],
       ),
     );
   }

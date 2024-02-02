@@ -1,11 +1,11 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/nirajbhatt/fvm/versions/3.7.9
+FLUTTER_ROOT=/usr/local/Caskroom/flutter/3.13.7/flutter
 FLUTTER_APPLICATION_PATH=/Users/nirajbhatt/flutter/packages/anydrawer
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_TARGET=lib/main.dart
 FLUTTER_BUILD_DIR=build
-FLUTTER_BUILD_NAME=1.0.2
-FLUTTER_BUILD_NUMBER=1.0.2
+FLUTTER_BUILD_NAME=1.0.3
+FLUTTER_BUILD_NUMBER=1.0.3
 EXCLUDED_ARCHS[sdk=iphonesimulator*]=i386
 EXCLUDED_ARCHS[sdk=iphoneos*]=armv7
 DART_OBFUSCATION=false

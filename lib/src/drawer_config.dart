@@ -55,7 +55,7 @@ class DrawerConfig {
           'borderRadius must be greater than or equal to 0',
         ),
         assert(
-          (closeOnClickOutside ?? true) || (closeOnEscapeKey ?? true),
+          closeOnClickOutside || closeOnEscapeKey,
           'both closeOnClickOutside and closeOnEscapeKey cannot be false',
         );
 
@@ -66,7 +66,7 @@ class DrawerConfig {
 
   /// Whether the drawer should be closed when the user clicks outside the
   /// drawer.
-  final bool? closeOnClickOutside;
+  final bool closeOnClickOutside;
 
   /// The opacity of the backdrop.
   final double backdropOpacity;
@@ -84,7 +84,7 @@ class DrawerConfig {
   final Duration animationDuration;
 
   /// Close on Escape key
-  final bool? closeOnEscapeKey;
+  final bool closeOnEscapeKey;
 
   /// Border radius
   final double borderRadius;
@@ -127,6 +127,8 @@ class DrawerConfig {
         closeOnClickOutside: $closeOnClickOutside, 
         backdropOpacity: $backdropOpacity,
         enableEdgeDrag: $dragEnabled, maxDragExtent: $maxDragExtent)
-        side: $side, animationDuration: $animationDuration''';
+        side: $side, animationDuration: $animationDuration,
+        closeOnEscapeKey: $closeOnEscapeKey, borderRadius: $borderRadius
+    ''';
   }
 }

@@ -59,14 +59,14 @@ void showDrawer(
 
   // Create the drawer
   final drawerOverlayEntry = _buildOverlayEntry(
-    context,
-    builder,
-    onOpen,
-    () {
+    context: context,
+    builder: builder,
+    onOpen: onOpen,
+    onClose: () {
       onClose?.call();
     },
-    config,
-    controller,
+    config: config,
+    controller: controller,
   );
 
   // Insert the drawer
@@ -79,14 +79,16 @@ void showDrawer(
 /// The [onOpen] is the callback function when the drawer is opened.
 /// The [onClose] is the callback function when the drawer is closed.
 /// The [config] is the drawer configuration.
-OverlayEntry _buildOverlayEntry(
-  BuildContext context,
-  DrawerBuilder builder,
+OverlayEntry _buildOverlayEntry({
+  required BuildContext context,
+  required DrawerBuilder builder,
+  required void Function() onClose,
+  required DrawerConfig config,
+  required AnyDrawerController? controller,
   void Function()? onOpen,
-  void Function() onClose,
-  DrawerConfig config,
-  AnyDrawerController? controller,
-) {
+}) {
+  final controller0 = controller ?? AnyDrawerController();
+
   // Get the size of the screen
   final size = MediaQuery.sizeOf(context);
 
@@ -111,22 +113,17 @@ OverlayEntry _buildOverlayEntry(
   late OverlayEntry drawerOverlayEntry;
 
   // close drawer method
-  void closeDrawer({bool escapeKey = false}) {
+  void closeDrawer() {
     if (animationController.isAnimating) return;
-
-    if (escapeKey && config.closeOnEscapeKey == false) {
-      return;
-    }
-
-    if (!escapeKey && config.closeOnClickOutside == false) {
-      return;
-    }
 
     animationController.reverse().whenCompleteOrCancel(() {
       if (drawerOverlayEntry.mounted) {
         drawerOverlayEntry
           ..remove()
           ..dispose();
+        if (controller == null) {
+          controller0.dispose();
+        }
       }
       onClose.call();
     });
@@ -145,7 +142,7 @@ OverlayEntry _buildOverlayEntry(
     builder: (context) {
       // Create the backdrop
       final backdrop = GestureDetector(
-        onTap: closeDrawer,
+        onTap: () => config.closeOnClickOutside ? controller0.close() : null,
         child: Container(
           color: Colors.black.withOpacity(config.backdropOpacity),
         ),
@@ -222,10 +219,11 @@ OverlayEntry _buildOverlayEntry(
         onOpen?.call();
       });
 
-      if (config.closeOnEscapeKey ?? true) {
+      if (config.closeOnEscapeKey) {
         RawKeyboard.instance.addListener((event) {
-          if (event.logicalKey == LogicalKeyboardKey.escape) {
-            closeDrawer(escapeKey: true);
+          if (event.logicalKey == LogicalKeyboardKey.escape &&
+              config.closeOnEscapeKey) {
+            controller0.close();
           }
         });
       }
@@ -233,7 +231,7 @@ OverlayEntry _buildOverlayEntry(
       if (config.closeOnResume) {
         SystemChannels.lifecycle.setMessageHandler((message) {
           if (message == AppLifecycleState.resumed.toString()) {
-            closeDrawer();
+            controller0.close();
           }
 
           return Future.value();
@@ -243,12 +241,10 @@ OverlayEntry _buildOverlayEntry(
       if (config.closeOnBackButton) {
         final rootBackDispatcher = Router.of(context).backButtonDispatcher;
 
-        debugPrint('Root back dispatcher: $rootBackDispatcher');
-
         if (rootBackDispatcher != null) {
           rootBackDispatcher.createChildBackButtonDispatcher()
             ..addCallback(() {
-              closeDrawer();
+              controller0.close();
 
               return Future.value(true);
             })
