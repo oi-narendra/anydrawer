@@ -220,11 +220,15 @@ OverlayEntry _buildOverlayEntry({
       });
 
       if (config.closeOnEscapeKey) {
-        RawKeyboard.instance.addListener((event) {
+        HardwareKeyboard.instance.addHandler((event) {
           if (event.logicalKey == LogicalKeyboardKey.escape &&
               config.closeOnEscapeKey) {
             controller0.close();
+
+            return true;
           }
+
+          return false;
         });
       }
 

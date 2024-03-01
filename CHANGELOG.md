@@ -1,15 +1,10 @@
-## 1.0.0
+## 1.0.5
 
-- Initial release
+- Updated deprecated `RawKeyboard` with `HardwareKeyboard` for handling `closeOnEscapeKey`.
 
-## 1.0.1
+## 1.0.4
 
-- Added screenshots to README.md
-- Fixed right drawer drag issue.
-
-## 1.0.2
-
-- Added `controller` property showDrawer function to close drawer programmatically.
+- Minor bug fixes.
 
 ## 1.0.3
 
@@ -17,6 +12,15 @@
 - Added `closeOnBackButton` property to close drawer when back button is pressed (Requires a route navigator).
 - Added `closeOnEscapeKey` property to close drawer when Escape key is pressed.
 
-## 1.0.4
+## 1.0.2
 
-- Minor bug fixes.
+- Added `controller` property showDrawer function to close drawer programmatically.
+
+## 1.0.1
+
+- Added screenshots to README.md
+- Fixed right drawer drag issue.
+
+## 1.0.0
+
+- Initial release
