@@ -77,6 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final AnyDrawerController controller = AnyDrawerController();
 
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   void _showDrawer() {
     showDrawer(
       context,
