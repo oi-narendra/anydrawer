@@ -24,7 +24,7 @@ To use the `anydrawer` package in your Flutter project, follow these steps:
 
    ```yaml
    dependencies:
-     anydrawer: ^1.0.4 # Replace with the latest version
+     anydrawer: ^1.0.6 # Replace with the latest version
    ```
 
 2. Run `flutter pub get` to fetch the package.
