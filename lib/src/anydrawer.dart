@@ -87,7 +87,7 @@ OverlayEntry _buildOverlayEntry({
   required AnyDrawerController? controller,
   void Function()? onOpen,
 }) {
-  final controller0 = controller ?? AnyDrawerController();
+  final internalController = controller ?? AnyDrawerController();
 
   // Get the size of the screen
   final size = MediaQuery.sizeOf(context);
@@ -112,6 +112,17 @@ OverlayEntry _buildOverlayEntry({
 
   late OverlayEntry drawerOverlayEntry;
 
+  bool handler(KeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.escape &&
+        config.closeOnEscapeKey) {
+      internalController.close();
+
+      return true;
+    }
+
+    return false;
+  }
+
   // close drawer method
   void closeDrawer() {
     if (animationController.isAnimating) return;
@@ -122,27 +133,29 @@ OverlayEntry _buildOverlayEntry({
           ..remove()
           ..dispose();
         if (controller == null) {
-          controller0.dispose();
+          internalController.dispose();
         }
+      }
+      if (config.closeOnEscapeKey) {
+        HardwareKeyboard.instance.removeHandler(handler);
       }
       onClose.call();
     });
   }
 
-  if (controller != null) {
-    controller.addListener(() {
-      if (controller.value) return;
+  internalController.addListener(() {
+    if (internalController.value) return;
 
-      closeDrawer();
-    });
-  }
+    closeDrawer();
+  });
 
   // Create the overlay entry
   return drawerOverlayEntry = OverlayEntry(
     builder: (context) {
       // Create the backdrop
       final backdrop = GestureDetector(
-        onTap: () => config.closeOnClickOutside ? controller0.close() : null,
+        onTap: () =>
+            config.closeOnClickOutside ? internalController.close() : null,
         child: Container(
           color: Colors.black.withOpacity(config.backdropOpacity),
         ),
@@ -220,22 +233,13 @@ OverlayEntry _buildOverlayEntry({
       });
 
       if (config.closeOnEscapeKey) {
-        HardwareKeyboard.instance.addHandler((event) {
-          if (event.logicalKey == LogicalKeyboardKey.escape &&
-              config.closeOnEscapeKey) {
-            controller0.close();
-
-            return true;
-          }
-
-          return false;
-        });
+        HardwareKeyboard.instance.addHandler(handler);
       }
 
       if (config.closeOnResume) {
         SystemChannels.lifecycle.setMessageHandler((message) {
           if (message == AppLifecycleState.resumed.toString()) {
-            controller0.close();
+            internalController.close();
           }
 
           return Future.value();
@@ -248,7 +252,7 @@ OverlayEntry _buildOverlayEntry({
         if (rootBackDispatcher != null) {
           rootBackDispatcher.createChildBackButtonDispatcher()
             ..addCallback(() {
-              controller0.close();
+              internalController.close();
 
               return Future.value(true);
             })

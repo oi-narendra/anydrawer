@@ -1,3 +1,9 @@
+## 1.0.6
+
+- Fixed drawer not closing when controller was not provided.
+- Fixed `AnydrawerController` dispose issue.
+-
+
 ## 1.0.5
 
 - Updated deprecated `RawKeyboard` with `HardwareKeyboard` for handling `closeOnEscapeKey`.

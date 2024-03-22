@@ -1,6 +1,6 @@
 name: anydrawer
 description: Unleash flexibility in your Flutter app with our package. Display a drawer anywhere, no scaffold needed. Try it now!
-version: 1.0.5
+version: 1.0.6
 homepage: https://github.com/oi-narendra/anydrawer
 
 environment:
