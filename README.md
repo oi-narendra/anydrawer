@@ -1,39 +1,98 @@
-# AnyDrawer
+<p align="center">
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/anydrawer.jpeg" alt="AnyDrawer - Drawers from any edge, no Scaffold needed" width="800"/>
+</p>
 
-[![Pub Version](https://img.shields.io/pub/v/anydrawer)](https://pub.dev/packages/anydrawer)
-[![License](https://img.shields.io/github/license/oi-narendra/anydrawer)](https://github.com/oi-narendra/anydrawer/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/oi-narendra/anydrawer)](https://github.com/oi-narendra/anydrawer/issues)
-[![Very Good Analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
-[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
-[![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
+<h1 align="center">AnyDrawer</h1>
 
-A Flutter package that lets you show a fully customizable drawer from **any** side of the screen — left, right, top, or bottom — no `Scaffold` required. Just call `showDrawer()` with a `BuildContext` and you're done.
+<p align="center">
+  <strong>Beautiful drawers from any edge. No Scaffold needed.</strong>
+</p>
 
-## Screenshots
+<p align="center">
+  <a href="https://pub.dev/packages/anydrawer"><img src="https://img.shields.io/pub/v/anydrawer?color=blue&label=pub.dev" alt="Pub Version"></a>
+  <a href="https://pub.dev/packages/anydrawer/score"><img src="https://img.shields.io/pub/likes/anydrawer?logo=dart" alt="Pub Likes"></a>
+  <a href="https://pub.dev/packages/anydrawer/score"><img src="https://img.shields.io/pub/points/anydrawer?logo=dart" alt="Pub Points"></a>
+  <a href="https://pub.dev/packages/anydrawer/score"><img src="https://img.shields.io/pub/popularity/anydrawer?logo=dart" alt="Popularity"></a>
+  <a href="https://github.com/oi-narendra/anydrawer/blob/main/LICENSE"><img src="https://img.shields.io/github/license/oi-narendra/anydrawer" alt="License"></a>
+</p>
 
-[<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample1.gif" width="700"/>]
+<p align="center">
+  <a href="https://pub.dev/packages/very_good_analysis"><img src="https://img.shields.io/badge/style-very_good_analysis-B22C89.svg" alt="Very Good Analysis"></a>
+  <a href="https://github.com/oi-narendra/anydrawer/issues"><img src="https://img.shields.io/github/issues/oi-narendra/anydrawer" alt="GitHub Issues"></a>
+</p>
 
-[<img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/sample2.gif" width="300"/>]
+<p align="center">
+  <img src="https://img.shields.io/badge/Android-3DDC84?style=flat&logo=android&logoColor=white" alt="Android">
+  <img src="https://img.shields.io/badge/iOS-000000?style=flat&logo=apple&logoColor=white" alt="iOS">
+  <img src="https://img.shields.io/badge/Web-4285F4?style=flat&logo=google-chrome&logoColor=white" alt="Web">
+  <img src="https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white" alt="macOS">
+  <img src="https://img.shields.io/badge/Windows-0078D6?style=flat&logo=windows&logoColor=white" alt="Windows">
+  <img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black" alt="Linux">
+</p>
 
-## Features
+---
+
+## Why AnyDrawer?
+
+Flutter's built-in `Drawer` widget is tied to `Scaffold`, limited to left/right, and gives you little control. **AnyDrawer** removes all those constraints.
+
+| Feature                        | Flutter Drawer     | AnyDrawer         |
+| ------------------------------ | ------------------ | ----------------- |
+| No Scaffold required           | ❌                 | ✅                |
+| Slide from any edge (L/R/T/B)  | ❌ Left/Right only | ✅ All four sides |
+| Backdrop blur (frosted glass)  | ❌                 | ✅                |
+| Return results (Future)        | ❌                 | ✅                |
+| Multiple drawers at once       | ❌                 | ✅                |
+| Drag to dismiss with callbacks | ❌                 | ✅                |
+| Swipe-from-edge gesture        | ❌                 | ✅                |
+| Declarative widget API         | ❌                 | ✅                |
+| Elevation and shadow           | ❌                 | ✅                |
+| Custom barrier builder         | ❌                 | ✅                |
+| Programmatic open/close/state  | ❌                 | ✅                |
+| Width constraints (min/max)    | ❌                 | ✅                |
+| Custom animation curve         | ❌                 | ✅                |
+| Works with dialogs on top      | ❌                 | ✅                |
+| Accessibility (semantics)      | Partial            | ✅                |
+
+---
+
+## ✨ Features at a Glance
 
 - 🎯 **No Scaffold needed** — show a drawer from literally anywhere
 - ↔️ **All four sides** — slide in from left, right, top, or bottom
-- 🪟 **Dialog support** — `showDialog`, `showModalBottomSheet`, and menus work on top of the drawer
-- 📚 **Multiple drawers** — open several drawers simultaneously (left + right, nested, etc.)
-- 🎚️ **Fully configurable** — width, border radius, backdrop opacity, animation duration & curve
-- 🖱️ **Drag to close** — optional drag gesture support with callbacks
-- ⌨️ **Keyboard & back button** — close on Escape key or Android back button
-- 🎮 **Programmatic control** — use `AnyDrawerController` to open/close the drawer from code
-- 🔗 **Deep linking friendly** — open drawers from route handlers or push notifications
-- 📐 **Width constraints** — `maxWidth` and `minWidth` for responsive layouts
 - 🌫️ **Backdrop blur** — frosted glass effect behind the drawer
-- ✨ **Elevation & shadow** — Material shadow on the drawer edge
-- 🎨 **Custom barrier** — provide your own barrier widget (gradient, blur, etc.)
-- 🧩 **Declarative API** — `AnyDrawer` widget for embedding in the widget tree
-- 👆 **Swipe-from-edge** — `AnyDrawerRegion` detects edge swipes to open a drawer
-- ♿ **Accessibility** — built-in semantics label support
 - 🔄 **Result return** — `showDrawer<T>()` returns `Future<T?>` like `showDialog`
+- 📚 **Multiple drawers** — open several drawers simultaneously
+- 🖱️ **Drag to close** — optional drag gesture support with callbacks
+- 🎮 **Programmatic control** — `AnyDrawerController` to open/close from code
+- 🧩 **Declarative API** — `AnyDrawer` widget for embedding in the widget tree
+- 👆 **Swipe-from-edge** — `AnyDrawerRegion` detects edge swipes to open
+- ✨ **Elevation & shadow** — Material shadow on the drawer edge
+- 🎨 **Custom barrier** — provide your own barrier widget
+- ⌨️ **Close on Escape / Back** — keyboard and Android back button
+- 📐 **Width constraints** — `maxWidth` and `minWidth` for responsive layouts
+- ♿ **Accessibility** — built-in semantics label support
+
+---
+
+## 📸 Preview
+
+<!--
+  📌 TO UPDATE: Replace these with new GIFs/screenshots showing v2.0.0 features.
+  Record the example app demonstrating:
+  1. Basic drawer from all 4 sides
+  2. Backdrop blur + elevation
+  3. Swipe-from-edge gesture
+  4. Multiple drawers open simultaneously
+-->
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/scnsht1.png" width="300" alt="Mobile Example"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/scnsht2.png" width="500" alt="Web Example"/>
+</p>
+
+---
 
 ## Installation
 
@@ -45,6 +104,8 @@ dependencies:
 ```bash
 flutter pub get
 ```
+
+---
 
 ## Quick Start
 
@@ -90,6 +151,8 @@ AnyDrawerRegion(
   child: const MyPageContent(),
 )
 ```
+
+---
 
 ## Configuration
 
@@ -142,10 +205,12 @@ showDrawer(
 | `maxWidth`            | `double?`         | —                  | Maximum pixel size constraint              |
 | `minWidth`            | `double?`         | —                  | Minimum pixel size constraint              |
 | `elevation`           | `double`          | `0.0`              | Material shadow elevation                  |
-| `shadowColor`         | `Color?`          | —                  | Shadow color when elevation > 0            |
+| `shadowColor`         | `Color?`          | —                  | Shadow color when elevation is set         |
 | `barrierBuilder`      | `BarrierBuilder?` | —                  | Custom barrier widget builder              |
 | `semanticsLabel`      | `String?`         | —                  | Accessibility label for screen readers     |
 | `resizable`           | `bool`            | `false`            | Enable animated runtime size changes       |
+
+---
 
 ## Returning Results
 
@@ -339,6 +404,8 @@ MaterialApp(
 );
 ```
 
+---
+
 ## Migration from 1.x
 
 ### Breaking changes in 2.0.0
@@ -347,9 +414,20 @@ MaterialApp(
 2. **`DrawerSide` has new values** — `top` and `bottom` were added. If you have exhaustive `switch` statements on `DrawerSide`, add cases for the new values.
 3. **Assertion removed** — previously, either `closeOnClickOutside` or `closeOnEscapeKey` had to be `true`. Now both can be `false`.
 
+---
+
 ## Contributing
 
-Pull requests are welcome. For major changes, please [open an issue](https://github.com/oi-narendra/anydrawer/issues) first to discuss what you would like to change.
+Pull requests are welcome! For major changes, please [open an issue](https://github.com/oi-narendra/anydrawer/issues) first to discuss what you would like to change.
+
+## Support
+
+If you find this package useful, consider:
+
+- ⭐ **Starring** the [GitHub repository](https://github.com/oi-narendra/anydrawer)
+- 👍 **Liking** on [pub.dev](https://pub.dev/packages/anydrawer)
+- 📢 **Sharing** with fellow Flutter developers
+- 🐛 **Reporting bugs** via [GitHub Issues](https://github.com/oi-narendra/anydrawer/issues)
 
 ## License
 
