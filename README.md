@@ -77,19 +77,20 @@ Flutter's built-in `Drawer` widget is tied to `Scaffold`, limited to left/right,
 
 ## 📸 Preview
 
-<!--
-  📌 TO UPDATE: Replace these with new GIFs/screenshots showing v2.0.0 features.
-  Record the example app demonstrating:
-  1. Basic drawer from all 4 sides
-  2. Backdrop blur + elevation
-  3. Swipe-from-edge gesture
-  4. Multiple drawers open simultaneously
--->
+**Web / Tablet — grid layout with settings drawer**
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/scnsht1.png" width="300" alt="Mobile Example"/>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/scnsht2.png" width="500" alt="Web Example"/>
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/screenshot_1.png" width="700" alt="Web example with settings drawer"/>
+</p>
+
+**Mobile — dialog over drawer · return results · drawer settings**
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/screenshot_2.png" width="220" alt="Dialog over drawer"/>
+  &nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/screenshot_3.png" width="220" alt="Return result from drawer"/>
+  &nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/oi-narendra/anydrawer/main/screenshots/screenshot_4.png" width="220" alt="Drawer settings panel"/>
 </p>
 
 ---

@@ -34,7 +34,11 @@ flutter: null
 #
 
 screenshots:
-  - description: "Example in mobile"
-    path: screenshots/scnsht1.png
-  - description: "Examples in Web"
-    path: screenshots/scnsht2.png
+  - description: "Web/tablet grid layout with settings drawer"
+    path: screenshots/screenshot_1.png
+  - description: "Dialog displayed on top of a drawer"
+    path: screenshots/screenshot_2.png
+  - description: "Return results from a drawer"
+    path: screenshots/screenshot_3.png
+  - description: "Drawer settings configuration panel"
+    path: screenshots/screenshot_4.png
