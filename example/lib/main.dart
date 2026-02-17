@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:anydrawer/anydrawer.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AnyDrawer Example',
+      title: 'AnyDrawer v2 Example',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -46,6 +48,8 @@ class _HomePageState extends State<HomePage> {
   bool _closeOnClickOutside = true;
   bool _closeOnEscapeKey = true;
   bool _dragEnabled = false;
+  double _backdropBlur = 0;
+  double _elevation = 0;
 
   DrawerConfig get _config => DrawerConfig(
         side: _side,
@@ -54,6 +58,9 @@ class _HomePageState extends State<HomePage> {
         closeOnClickOutside: _closeOnClickOutside,
         closeOnEscapeKey: _closeOnEscapeKey,
         dragEnabled: _dragEnabled,
+        backdropBlur: _backdropBlur,
+        elevation: _elevation,
+        curve: Curves.easeOutCubic,
       );
 
   @override
@@ -62,7 +69,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AnyDrawer'),
+        title: const Text('AnyDrawer v2'),
         centerTitle: true,
         backgroundColor: colorScheme.inversePrimary,
       ),
@@ -74,7 +81,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // --- Use Case Demos ---
+                // --- v1 Use Cases ---
                 Text(
                   'Use Cases',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -129,6 +136,74 @@ class _HomePageState extends State<HomePage> {
                   color: colorScheme.primaryContainer,
                   onTap: () => _showProgrammaticDrawer(),
                 ),
+
+                const SizedBox(height: 32),
+
+                // --- v2 Use Cases ---
+                Text(
+                  'v2.0 Features',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.primary,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                _UseCaseCard(
+                  icon: Icons.vertical_align_top,
+                  title: 'Top & Bottom Drawers',
+                  subtitle: 'Slide panels from any edge',
+                  color: colorScheme.tertiaryContainer,
+                  onTap: () => _showTopBottomDemo(),
+                ),
+                const SizedBox(height: 8),
+                _UseCaseCard(
+                  icon: Icons.blur_on,
+                  title: 'Backdrop Blur',
+                  subtitle: 'Frosted glass effect behind the drawer',
+                  color: colorScheme.secondaryContainer,
+                  onTap: () => _showBackdropBlurDemo(),
+                ),
+                const SizedBox(height: 8),
+                _UseCaseCard(
+                  icon: Icons.output,
+                  title: 'Return Result',
+                  subtitle: 'showDrawer returns Future<T?>',
+                  color: colorScheme.primaryContainer,
+                  onTap: () => _showReturnResultDemo(),
+                ),
+                const SizedBox(height: 8),
+                _UseCaseCard(
+                  icon: Icons.widgets,
+                  title: 'Declarative AnyDrawer',
+                  subtitle: 'Widget-based API with controller',
+                  color: colorScheme.errorContainer,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const _DeclarativeDemoPage(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _UseCaseCard(
+                  icon: Icons.swipe,
+                  title: 'Swipe-from-Edge',
+                  subtitle: 'AnyDrawerRegion gesture widget',
+                  color: colorScheme.surfaceContainerHighest,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const _SwipeRegionDemoPage(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _UseCaseCard(
+                  icon: Icons.auto_awesome,
+                  title: 'Elevation & Shadow',
+                  subtitle: 'Material shadow on the drawer',
+                  color: colorScheme.tertiaryContainer,
+                  onTap: () => _showElevationDemo(),
+                ),
+
                 const SizedBox(height: 32),
 
                 // --- Configuration ---
@@ -161,6 +236,16 @@ class _HomePageState extends State<HomePage> {
                               value: DrawerSide.right,
                               label: Text('Right'),
                               icon: Icon(Icons.arrow_forward),
+                            ),
+                            ButtonSegment(
+                              value: DrawerSide.top,
+                              label: Text('Top'),
+                              icon: Icon(Icons.arrow_upward),
+                            ),
+                            ButtonSegment(
+                              value: DrawerSide.bottom,
+                              label: Text('Bottom'),
+                              icon: Icon(Icons.arrow_downward),
                             ),
                           ],
                           selected: {_side},
@@ -197,20 +282,46 @@ class _HomePageState extends State<HomePage> {
                             setState(() => _borderRadius = value);
                           },
                         ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Backdrop Blur: ${_backdropBlur.round()}',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        Slider(
+                          value: _backdropBlur,
+                          max: 20,
+                          divisions: 20,
+                          label: '${_backdropBlur.round()}',
+                          onChanged: (value) {
+                            setState(() => _backdropBlur = value);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Elevation: ${_elevation.round()}',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        Slider(
+                          value: _elevation,
+                          max: 24,
+                          divisions: 24,
+                          label: '${_elevation.round()}',
+                          onChanged: (value) {
+                            setState(() => _elevation = value);
+                          },
+                        ),
                         const Divider(height: 24),
                         SwitchListTile(
                           title: const Text('Close on click outside'),
                           value: _closeOnClickOutside,
-                          onChanged: _closeOnEscapeKey
-                              ? (v) => setState(() => _closeOnClickOutside = v)
-                              : null,
+                          onChanged: (v) =>
+                              setState(() => _closeOnClickOutside = v),
                         ),
                         SwitchListTile(
                           title: const Text('Close on Escape key'),
                           value: _closeOnEscapeKey,
-                          onChanged: _closeOnClickOutside
-                              ? (v) => setState(() => _closeOnEscapeKey = v)
-                              : null,
+                          onChanged: (v) =>
+                              setState(() => _closeOnEscapeKey = v),
                         ),
                         SwitchListTile(
                           title: const Text('Drag enabled'),
@@ -229,78 +340,90 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ---- Use Case Drawers ----
+  // ---- v1 Use Case Drawers ----
 
   void _showNavigationDrawer() {
-    showDrawer(
-      context,
-      builder: (context) => const _NavigationDrawerContent(),
-      config: _config.copyWith(side: DrawerSide.left),
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => const _NavigationDrawerContent(),
+        config: _config.copyWith(side: DrawerSide.left),
+      ),
     );
   }
 
   void _showFormDrawer() {
-    showDrawer(
-      context,
-      builder: (context) => const _FormDrawerContent(),
-      config: _config,
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => const _FormDrawerContent(),
+        config: _config,
+      ),
     );
   }
 
   void _showDialogDemoDrawer() {
-    showDrawer(
-      context,
-      builder: (context) => const _DialogDemoDrawerContent(),
-      config: _config,
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => const _DialogDemoDrawerContent(),
+        config: _config,
+      ),
     );
   }
 
   void _showSettingsDrawer() {
-    showDrawer(
-      context,
-      builder: (context) => const _SettingsDrawerContent(),
-      config: _config.copyWith(side: DrawerSide.right),
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => const _SettingsDrawerContent(),
+        config: _config.copyWith(side: DrawerSide.right),
+      ),
     );
   }
 
   void _showMultipleDrawers() {
     // Open left drawer first
-    showDrawer(
-      context,
-      builder: (context) => const _MultiDrawerContent(
-        side: DrawerSide.left,
-        title: 'Left Drawer',
-        description: 'This drawer shares the screen with the right drawer. '
-            'Both can be interacted with independently.',
-        icon: Icons.arrow_back,
-      ),
-      config: DrawerConfig(
-        side: DrawerSide.left,
-        widthPercentage: 0.35,
-        borderRadius: _borderRadius,
-        closeOnClickOutside: false,
-        closeOnEscapeKey: _closeOnEscapeKey,
-        backdropOpacity: 0.1,
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => const _MultiDrawerContent(
+          side: DrawerSide.left,
+          title: 'Left Drawer',
+          description: 'This drawer shares the screen with the right drawer. '
+              'Both can be interacted with independently.',
+          icon: Icons.arrow_back,
+        ),
+        config: DrawerConfig(
+          side: DrawerSide.left,
+          widthPercentage: 0.35,
+          borderRadius: _borderRadius,
+          closeOnClickOutside: false,
+          closeOnEscapeKey: _closeOnEscapeKey,
+          backdropOpacity: 0.1,
+        ),
       ),
     );
 
     // Open right drawer on top
-    showDrawer(
-      context,
-      builder: (context) => const _MultiDrawerContent(
-        side: DrawerSide.right,
-        title: 'Right Drawer',
-        description: 'Tap outside to close this drawer and reveal '
-            'the left drawer underneath.',
-        icon: Icons.arrow_forward,
-      ),
-      config: DrawerConfig(
-        side: DrawerSide.right,
-        widthPercentage: 0.35,
-        borderRadius: _borderRadius,
-        closeOnClickOutside: _closeOnClickOutside,
-        closeOnEscapeKey: _closeOnEscapeKey,
-        backdropOpacity: 0.15,
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => const _MultiDrawerContent(
+          side: DrawerSide.right,
+          title: 'Right Drawer',
+          description: 'Tap outside to close this drawer and reveal '
+              'the left drawer underneath.',
+          icon: Icons.arrow_forward,
+        ),
+        config: DrawerConfig(
+          side: DrawerSide.right,
+          widthPercentage: 0.35,
+          borderRadius: _borderRadius,
+          closeOnClickOutside: _closeOnClickOutside,
+          closeOnEscapeKey: _closeOnEscapeKey,
+          backdropOpacity: 0.15,
+        ),
       ),
     );
   }
@@ -308,18 +431,292 @@ class _HomePageState extends State<HomePage> {
   void _showProgrammaticDrawer() {
     final controller = AnyDrawerController();
 
-    showDrawer(
-      context,
-      controller: controller,
-      builder: (context) => _ProgrammaticDrawerContent(
+    unawaited(
+      showDrawer<void>(
+        context,
         controller: controller,
+        builder: (context) => _ProgrammaticDrawerContent(
+          controller: controller,
+        ),
+        config: _config,
+        onOpen: () => debugPrint('Drawer opened'),
+        onClose: () {
+          debugPrint('Drawer closed');
+          controller.dispose();
+        },
       ),
-      config: _config,
-      onOpen: () => debugPrint('Drawer opened'),
-      onClose: () {
-        debugPrint('Drawer closed');
-        controller.dispose();
-      },
+    );
+  }
+
+  // ---- v2 Use Case Drawers ----
+
+  void _showTopBottomDemo() {
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.vertical_align_top,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Top Drawer',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Slides in from the top of the screen. '
+                'Great for notification bars or top panels.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Show bottom drawer
+                      unawaited(
+                        showDrawer<void>(
+                          this.context,
+                          builder: (context) => Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.vertical_align_bottom,
+                                  size: 48,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Bottom Drawer',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Like a custom bottom sheet, but with '
+                                  'all AnyDrawer features.',
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 24),
+                                FilledButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Close'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          config: const DrawerConfig(
+                            side: DrawerSide.bottom,
+                            widthPercentage: 0.35,
+                            borderRadius: 20,
+                            curve: Curves.easeOutBack,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Try Bottom'),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        config: const DrawerConfig(
+          side: DrawerSide.top,
+          widthPercentage: 0.3,
+          borderRadius: 20,
+          curve: Curves.easeOutBack,
+        ),
+      ),
+    );
+  }
+
+  void _showBackdropBlurDemo() {
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.blur_on,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Backdrop Blur',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'The content behind the drawer has a frosted glass '
+                'blur effect applied via BackdropFilter.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'backdropBlur: 8.0',
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+        config: const DrawerConfig(
+          backdropBlur: 8,
+          backdropOpacity: 0.15,
+          widthPercentage: 0.5,
+        ),
+      ),
+    );
+  }
+
+  void _showReturnResultDemo() {
+    showDrawer<String>(
+      context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.output,
+              size: 48,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Pick a Color',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'showDrawer now returns Future<T?>, '
+              'just like showDialog.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ...['Red', 'Green', 'Blue', 'Purple'].map(
+              (color) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(color),
+                  child: Text(color),
+                ),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
+      ),
+      config: const DrawerConfig(widthPercentage: 0.4),
+    ).then((result) {
+      if (result != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Drawer returned: $result'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    });
+  }
+
+  void _showElevationDemo() {
+    unawaited(
+      showDrawer<void>(
+        context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.auto_awesome,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Elevation & Shadow',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'The drawer is rendered with Material elevation, '
+                'casting a natural shadow.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'elevation: 16',
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+        config: const DrawerConfig(
+          elevation: 16,
+          backdropOpacity: 0.1,
+          widthPercentage: 0.45,
+        ),
+      ),
     );
   }
 }
@@ -627,7 +1024,7 @@ class _DialogDemoDrawerContent extends StatelessWidget {
               showAboutDialog(
                 context: context,
                 applicationName: 'AnyDrawer',
-                applicationVersion: '1.0.7',
+                applicationVersion: '2.0.0',
                 children: [
                   const Text(
                     'Dialogs work seamlessly from inside the drawer.',
@@ -808,45 +1205,47 @@ class _MultiDrawerContent extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () {
                 // Open another drawer from inside this one
-                showDrawer(
-                  context,
-                  builder: (ctx) => Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.layers,
-                          size: 48,
-                          color: colorScheme.tertiary,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nested Drawer!',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Drawers can be stacked on '
-                          'top of each other.',
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        FilledButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          child: const Text('Close'),
-                        ),
-                      ],
+                unawaited(
+                  showDrawer<void>(
+                    context,
+                    builder: (ctx) => Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.layers,
+                            size: 48,
+                            color: colorScheme.tertiary,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Nested Drawer!',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Drawers can be stacked on '
+                            'top of each other.',
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          FilledButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  config: const DrawerConfig(
-                    side: DrawerSide.right,
-                    widthPercentage: 0.35,
-                    borderRadius: 20,
+                    config: const DrawerConfig(
+                      side: DrawerSide.right,
+                      widthPercentage: 0.35,
+                      borderRadius: 20,
+                    ),
                   ),
                 );
               },
@@ -971,6 +1370,246 @@ class _ProgrammaticDrawerContent extends StatelessWidget {
             child: const Text('Close via Navigator.pop'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// --- Declarative AnyDrawer Demo Page ---
+
+class _DeclarativeDemoPage extends StatefulWidget {
+  const _DeclarativeDemoPage();
+
+  @override
+  State<_DeclarativeDemoPage> createState() => _DeclarativeDemoPageState();
+}
+
+class _DeclarativeDemoPageState extends State<_DeclarativeDemoPage> {
+  final _controller = AnyDrawerController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Declarative AnyDrawer'),
+        backgroundColor: colorScheme.inversePrimary,
+      ),
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.widgets,
+                    size: 64,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Declarative Widget API',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'The AnyDrawer widget lets you embed drawer '
+                    'lifecycle management directly in your widget '
+                    'tree. Open and close it via the controller.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+                  FilledButton.icon(
+                    onPressed: () => _controller.open(),
+                    icon: const Icon(Icons.open_in_new),
+                    label: const Text('Open Drawer'),
+                  ),
+                  const SizedBox(height: 12),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _controller,
+                    builder: (context, isOpen, _) {
+                      return Text(
+                        'controller.isOpen: $isOpen',
+                        style: TextStyle(
+                          fontFamily: 'monospace',
+                          color: isOpen
+                              ? colorScheme.primary
+                              : colorScheme.outline,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // The declarative AnyDrawer widget — invisible in the tree,
+          // manages lifecycle automatically.
+          AnyDrawer(
+            controller: _controller,
+            builder: (context) => Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    size: 48,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Declarative Drawer',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'This drawer was opened by calling '
+                    'controller.open(). No manual showDrawer() '
+                    'call needed!',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: () => _controller.close(),
+                    child: const Text('Close via Controller'),
+                  ),
+                ],
+              ),
+            ),
+            config: const DrawerConfig(
+              side: DrawerSide.right,
+              widthPercentage: 0.5,
+              backdropBlur: 4,
+              backdropOpacity: 0.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// --- Swipe Region Demo Page ---
+
+class _SwipeRegionDemoPage extends StatelessWidget {
+  const _SwipeRegionDemoPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Swipe-from-Edge'),
+        backgroundColor: colorScheme.inversePrimary,
+      ),
+      body: AnyDrawerRegion(
+        side: DrawerSide.left,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.swipe_right,
+                size: 48,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Swipe Drawer',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'This drawer opened because you swiped '
+                'from the left edge of the screen!',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+        config: const DrawerConfig(
+          side: DrawerSide.left,
+          widthPercentage: 0.6,
+          dragEnabled: true,
+          backdropBlur: 3,
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.swipe,
+                  size: 64,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'AnyDrawerRegion',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  '← Swipe from the left edge of the screen '
+                  'to open the drawer.\n\n'
+                  'The AnyDrawerRegion widget wraps your page '
+                  'content and detects edge swipe gestures.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'AnyDrawerRegion(\n'
+                    '  side: DrawerSide.left,\n'
+                    '  builder: ...,\n'
+                    '  child: YourPage(),\n'
+                    ')',
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
