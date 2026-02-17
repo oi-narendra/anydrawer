@@ -1,7 +1,16 @@
 name: anydrawer
-description: Unleash flexibility in your Flutter app with our package. Display a drawer anywhere, no scaffold needed. Try it now!
+description: >-
+  A powerful Flutter drawer that slides from any edge — left, right, top, or bottom.
+  No Scaffold required. Supports backdrop blur, drag gestures, return values,
+  multiple drawers, swipe-from-edge, and declarative API.
 version: 2.0.0
 homepage: https://github.com/oi-narendra/anydrawer
+topics:
+  - drawer
+  - navigation
+  - panel
+  - overlay
+  - widget
 
 environment:
   sdk: ">=3.6.0 <5.0.0"
