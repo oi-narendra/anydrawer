@@ -6,7 +6,7 @@
 /// Just call the `showDrawer` function to show the drawer.
 /// You can also specify the `DrawerConfig` to customize the drawer.
 ///
-library anydrawer;
+library;
 
 export 'src/anydrawer.dart';
 export 'src/anydrawer_controller.dart';

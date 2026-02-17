@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:anydrawer/anydrawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Type definition for the drawer builder.
 /// The [context] is the build context
@@ -51,229 +52,306 @@ void showDrawer(
   DrawerConfig? config,
   AnyDrawerController? controller,
 }) {
-  // Get overlay state
-  final overlayState = Overlay.of(context);
-
-  // If the drawer config is null, create a new one
   config ??= const DrawerConfig();
 
-  // Create the drawer
-  final drawerOverlayEntry = _buildOverlayEntry(
-    context: context,
-    builder: builder,
-    onOpen: onOpen,
-    onClose: () {
-      onClose?.call();
-    },
-    config: config,
-    controller: controller,
+  unawaited(
+    Navigator.of(context).push<void>(
+      _DrawerRoute(
+        drawerBuilder: builder,
+        config: config,
+        onOpen: onOpen,
+        onClose: onClose,
+        drawerController: controller,
+      ),
+    ),
   );
-
-  // Insert the drawer
-  overlayState.insert(drawerOverlayEntry);
 }
 
-/// Private function to build the drawer overlay entry.
-/// The [context] is the build context.
-/// The [builder] is the drawer builder.
-/// The [onOpen] is the callback function when the drawer is opened.
-/// The [onClose] is the callback function when the drawer is closed.
-/// The [config] is the drawer configuration.
-OverlayEntry _buildOverlayEntry({
-  required BuildContext context,
-  required DrawerBuilder builder,
-  required void Function() onClose,
-  required DrawerConfig config,
-  required AnyDrawerController? controller,
-  void Function()? onOpen,
-}) {
-  final internalController = controller ?? AnyDrawerController();
-
-  // Get the size of the screen
-  final size = MediaQuery.sizeOf(context);
-
-  // width multiplier
-  final widthMultiplier =
-      config.widthPercentage ?? _getDefaultWidthPercentage(size);
-
-  final width = size.width * widthMultiplier;
-
-  // Get the constraints
-  final constraints = BoxConstraints.tightFor(
-    width: width,
-    height: size.height,
-  );
-
-  // animation controller
-  final animationController = AnimationController(
-    vsync: Navigator.of(context).overlay!,
-    duration: config.animationDuration,
-  );
-
-  late OverlayEntry drawerOverlayEntry;
-
-  bool handler(KeyEvent event) {
-    if (event.logicalKey == LogicalKeyboardKey.escape &&
-        config.closeOnEscapeKey) {
-      internalController.close();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  // close drawer method
-  void closeDrawer() {
-    if (animationController.isAnimating) return;
-
-    animationController.reverse().whenCompleteOrCancel(() {
-      if (drawerOverlayEntry.mounted) {
-        drawerOverlayEntry
-          ..remove()
-          ..dispose();
-        if (controller == null) {
-          internalController.dispose();
-        }
-      }
-      if (config.closeOnEscapeKey) {
-        HardwareKeyboard.instance.removeHandler(handler);
-      }
-      onClose.call();
-    });
-  }
-
-  internalController.addListener(() {
-    if (internalController.value) return;
-
-    closeDrawer();
+/// Route-based drawer implementation.
+/// Using [PopupRoute] ensures that dialogs, bottom sheets, and menus
+/// shown from inside the drawer naturally stack above it.
+class _DrawerRoute extends PopupRoute<void> {
+  _DrawerRoute({
+    required this.drawerBuilder,
+    required this.config,
+    this.onOpen,
+    this.onClose,
+    this.drawerController,
   });
 
-  // Create the overlay entry
-  return drawerOverlayEntry = OverlayEntry(
-    builder: (context) {
-      // Create the backdrop
-      final backdrop = GestureDetector(
-        onTap: () =>
-            config.closeOnClickOutside ? internalController.close() : null,
-        child: Container(
-          color: Colors.black.withOpacity(config.backdropOpacity),
+  final DrawerBuilder drawerBuilder;
+  final DrawerConfig config;
+  final VoidCallback? onOpen;
+  final VoidCallback? onClose;
+  final AnyDrawerController? drawerController;
+
+  /// Exposes the route's [AnimationController] so that the drawer content
+  /// widget can drive drag animations without accessing protected members.
+  AnimationController? get animationController => controller;
+
+  @override
+  Color? get barrierColor =>
+      Colors.black.withValues(alpha: config.backdropOpacity);
+
+  @override
+  bool get barrierDismissible => config.closeOnClickOutside;
+
+  @override
+  String? get barrierLabel => 'Dismiss drawer';
+
+  @override
+  Duration get transitionDuration => config.animationDuration;
+
+  /// Custom barrier that calls [Navigator.pop] directly instead of
+  /// [Navigator.maybePop]. This bypasses [PopScope]'s `canPop: false` so
+  /// that barrier taps always dismiss the drawer when `closeOnClickOutside`
+  /// is true, while system Escape/back button pops are still controlled
+  /// by the [PopScope] in the content widget.
+  @override
+  Widget buildModalBarrier() {
+    if (!config.closeOnClickOutside) {
+      return AnimatedModalBarrier(
+        color: animation!.drive(
+          ColorTween(begin: Colors.transparent, end: barrierColor),
         ),
+        dismissible: false,
+        semanticsLabel: barrierLabel,
       );
+    }
 
-      // Create the drawer
-      final drawer = GestureDetector(
-        onHorizontalDragUpdate: (details) {
-          if (config.dragEnabled == false) return;
-
-          final delta = details.primaryDelta!;
-          final position = animationController.value;
-          final newPosition = position +
-              delta / width * (config.side == DrawerSide.left ? 1 : -1);
-          animationController.value = newPosition.clamp(0, 1);
-        },
-        onHorizontalDragEnd: (details) {
-          if (animationController.value < 0.5) {
-            animationController.reverse().whenCompleteOrCancel(() {
-              if (drawerOverlayEntry.mounted) {
-                drawerOverlayEntry
-                  ..remove()
-                  ..dispose();
-              }
-              onClose.call();
-            });
-          } else {
-            animationController.forward();
-          }
-        },
-        child: Align(
-          alignment: config.side == DrawerSide.left
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: config.side == DrawerSide.left
-                  ? const Offset(-1, 0)
-                  : const Offset(1, 0),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(
-                parent: animationController,
-                curve: Curves.easeInOut,
-              ),
-            ),
-            child: Container(
-              constraints: constraints,
-              child: Drawer(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: config.side == DrawerSide.left
-                        ? Radius.zero
-                        : Radius.circular(config.borderRadius),
-                    topRight: config.side == DrawerSide.left
-                        ? Radius.circular(config.borderRadius)
-                        : Radius.zero,
-                    bottomLeft: config.side == DrawerSide.left
-                        ? Radius.zero
-                        : Radius.circular(config.borderRadius),
-                    bottomRight: config.side == DrawerSide.left
-                        ? Radius.circular(config.borderRadius)
-                        : Radius.zero,
-                  ),
-                ),
-                child: builder(context),
-              ),
+    return AnimatedBuilder(
+      animation: animation!,
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Container(
+            color: Color.lerp(
+              Colors.transparent,
+              barrierColor,
+              animation!.value,
             ),
           ),
-        ),
-      );
+        );
+      },
+    );
+  }
 
-      animationController.forward().whenCompleteOrCancel(() {
-        onOpen?.call();
-      });
+  @override
+  TickerFuture didPush() {
+    final result = super.didPush();
+    unawaited(result.whenComplete(() => onOpen?.call()));
 
-      if (config.closeOnEscapeKey) {
-        HardwareKeyboard.instance.addHandler(handler);
-      }
+    return result;
+  }
 
-      if (config.closeOnResume) {
-        SystemChannels.lifecycle.setMessageHandler((message) {
-          if (message == AppLifecycleState.resumed.toString()) {
-            internalController.close();
+  @override
+  bool didPop(void result) {
+    // Defer onClose to avoid calling it during notifyListeners()
+    // when the controller triggers the close.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onClose?.call();
+    });
+
+    return super.didPop(result);
+  }
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    final size = MediaQuery.sizeOf(context);
+    final widthMultiplier =
+        config.widthPercentage ?? _getDefaultWidthPercentage(size);
+    final width = size.width * widthMultiplier;
+
+    return _DrawerContent(
+      config: config,
+      width: width,
+      height: size.height,
+      builder: drawerBuilder,
+      drawerController: drawerController,
+      route: this,
+    );
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final slideAnimation = Tween<Offset>(
+      begin: config.side == DrawerSide.left
+          ? const Offset(-1, 0)
+          : const Offset(1, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+    );
+
+    return Align(
+      alignment: config.side == DrawerSide.left
+          ? Alignment.centerLeft
+          : Alignment.centerRight,
+      widthFactor: 0,
+      heightFactor: 0,
+      child: SlideTransition(
+        position: slideAnimation,
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Stateful content widget that handles drag, keyboard, controller,
+/// and lifecycle interactions for the drawer.
+class _DrawerContent extends StatefulWidget {
+  const _DrawerContent({
+    required this.config,
+    required this.width,
+    required this.height,
+    required this.builder,
+    required this.route,
+    this.drawerController,
+  });
+
+  final DrawerConfig config;
+  final double width;
+  final double height;
+  final DrawerBuilder builder;
+  final AnyDrawerController? drawerController;
+  final _DrawerRoute route;
+
+  @override
+  State<_DrawerContent> createState() => _DrawerContentState();
+}
+
+class _DrawerContentState extends State<_DrawerContent>
+    with WidgetsBindingObserver {
+  bool _popping = false;
+  AnyDrawerController? _internalController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.drawerController != null) {
+      widget.drawerController!.addListener(_onControllerChanged);
+    } else {
+      _internalController = AnyDrawerController();
+    }
+
+    if (widget.config.closeOnResume) {
+      WidgetsBinding.instance.addObserver(this);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.config.closeOnResume) {
+      WidgetsBinding.instance.removeObserver(this);
+    }
+
+    if (widget.drawerController != null) {
+      widget.drawerController!.removeListener(_onControllerChanged);
+    }
+
+    _internalController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && widget.config.closeOnResume) {
+      _closeDrawer();
+    }
+  }
+
+  void _onControllerChanged() {
+    if (widget.drawerController != null && !widget.drawerController!.value) {
+      _closeDrawer();
+    }
+  }
+
+  void _closeDrawer() {
+    if (!_popping && mounted) {
+      _popping = true;
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.only(
+      topLeft: widget.config.side == DrawerSide.left
+          ? Radius.zero
+          : Radius.circular(widget.config.borderRadius),
+      topRight: widget.config.side == DrawerSide.left
+          ? Radius.circular(widget.config.borderRadius)
+          : Radius.zero,
+      bottomLeft: widget.config.side == DrawerSide.left
+          ? Radius.zero
+          : Radius.circular(widget.config.borderRadius),
+      bottomRight: widget.config.side == DrawerSide.left
+          ? Radius.circular(widget.config.borderRadius)
+          : Radius.zero,
+    );
+
+    Widget drawerWidget = SizedBox(
+      width: widget.width,
+      height: widget.height,
+      child: Drawer(
+        shape: RoundedRectangleBorder(borderRadius: borderRadius),
+        child: widget.builder(context),
+      ),
+    );
+
+    if (widget.config.dragEnabled == true) {
+      drawerWidget = GestureDetector(
+        onHorizontalDragUpdate: (details) {
+          final animController = widget.route.animationController;
+          if (animController == null) return;
+          final delta = details.primaryDelta!;
+          final position = animController.value;
+          final newPosition = position +
+              delta /
+                  widget.width *
+                  (widget.config.side == DrawerSide.left ? 1 : -1);
+          animController.value = newPosition.clamp(0.0, 1.0);
+        },
+        onHorizontalDragEnd: (details) {
+          final animController = widget.route.animationController;
+          if (animController == null) return;
+          if (animController.value < 0.5) {
+            _closeDrawer();
+          } else {
+            unawaited(animController.forward());
           }
-
-          return Future.value();
-        });
-      }
-
-      if (config.closeOnBackButton) {
-        final rootBackDispatcher = Router.of(context).backButtonDispatcher;
-
-        if (rootBackDispatcher != null) {
-          rootBackDispatcher.createChildBackButtonDispatcher()
-            ..addCallback(() {
-              internalController.close();
-
-              return Future.value(true);
-            })
-            ..takePriority();
-        }
-      }
-
-      return Stack(
-        children: [
-          backdrop,
-          drawer,
-        ],
+        },
+        child: drawerWidget,
       );
-    },
-  );
+    }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        // System-initiated pop (Escape key or Android back button)
+        if (widget.config.closeOnEscapeKey || widget.config.closeOnBackButton) {
+          _closeDrawer();
+        }
+      },
+      child: drawerWidget,
+    );
+  }
 }
 
 /// Private function to get the default width percentage.
 /// The [size] is the size of the screen.
 /// Returns the default width percentage.
-
 double _getDefaultWidthPercentage(Size size) {
   if (size.width < 500) {
     return 0.8;

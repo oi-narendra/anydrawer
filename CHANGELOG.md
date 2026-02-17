@@ -1,3 +1,12 @@
+## 1.0.7
+
+- **Breaking fix:** Rewrote drawer internals to use `PopupRoute` instead of raw `OverlayEntry`. Dialogs, bottom sheets, and menus now correctly display above the drawer ([#5](https://github.com/oi-narendra/anydrawer/issues/5)).
+- **Fixed:** Click-outside dismiss now works reliably via a custom modal barrier.
+- **Fixed:** `AnyDrawerController.dispose()` crash when called from `onClose` callback — `onClose` is now deferred to avoid re-entrancy during `notifyListeners()`.
+- **New:** Multiple drawers can be opened simultaneously (e.g., left + right side).
+- **New:** Nested drawer support — open a drawer from inside another drawer.
+- **Improved:** Revamped example app with 6 use case demos: Navigation Menu, Form, Dialog-over-Drawer, Settings Panel, Multiple Drawers, and Programmatic Control with deep linking pattern.
+
 ## 1.0.6
 
 - Fixed drawer not closing when controller was not provided.

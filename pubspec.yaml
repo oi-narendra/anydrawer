@@ -1,10 +1,10 @@
 name: anydrawer
 description: Unleash flexibility in your Flutter app with our package. Display a drawer anywhere, no scaffold needed. Try it now!
-version: 1.0.6
+version: 1.0.7
 homepage: https://github.com/oi-narendra/anydrawer
 
 environment:
-  sdk: ">=3.0.1 <4.0.0"
+  sdk: ">=3.6.0 <5.0.0"
   flutter: ">=2.17.0"
 
 dependencies:
@@ -12,11 +12,10 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  dart_code_metrics: ^5.7.4
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^5.0.0+1
+  very_good_analysis: ^10.2.0
 
 flutter: null
 # To add assets to your package, add an assets section, like this:
