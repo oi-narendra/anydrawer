@@ -179,23 +179,27 @@ class _DrawerRoute<T> extends PopupRoute<T> {
       AnimatedBuilder(
         animation: animation!,
         builder: (context, child) {
-          Widget barrier = GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              color: Color.lerp(
-                Colors.transparent,
-                barrierColor,
-                animation!.value,
-              ),
+          final barrierSurface = Container(
+            color: Color.lerp(
+              Colors.transparent,
+              barrierColor,
+              animation!.value,
             ),
           );
+
+          Widget barrier = config.barrierPenetrable
+              ? barrierSurface
+              : GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: barrierSurface,
+                );
 
           if (config.backdropBlur > 0) {
             final sigma = config.backdropBlur * animation!.value;
             barrier = BackdropFilter(
               filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
               child: barrier,
-            );
+            ),
           }
 
           return barrier;

@@ -208,7 +208,7 @@ showDrawer(
 | `elevation`           | `double`          | `0.0`              | Material shadow elevation                  |
 | `shadowColor`         | `Color?`          | —                  | Shadow color when elevation is set         |
 | `barrierBuilder`      | `BarrierBuilder?` | —                  | Custom barrier widget builder              |
-| `barrierPenetrable`   | `bool`            | `false`            | Allow pointer events to pass through barrier |
+| `barrierPenetrable`   | `bool`            | `false`            | Allow pointer pass-through (`closeOnClickOutside` ignored) |
 | `semanticsLabel`      | `String?`         | —                  | Accessibility label for screen readers     |
 | `resizable`           | `bool`            | `false`            | Enable animated runtime size changes       |
 

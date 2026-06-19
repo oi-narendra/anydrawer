@@ -182,6 +182,7 @@ class DrawerConfig {
   /// Whether pointer events should pass through the barrier.
   ///
   /// When true, taps outside the drawer are not intercepted by the barrier.
+  /// In this mode, [closeOnClickOutside] has no effect.
   final bool barrierPenetrable;
 
   /// Accessibility label announced for the drawer.
