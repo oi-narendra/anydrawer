@@ -139,9 +139,16 @@ class _DrawerRoute<T> extends PopupRoute<T> {
   /// by the [PopScope] in the content widget.
   @override
   Widget buildModalBarrier() {
+    Widget applyBarrierPointerBehavior(Widget barrier) {
+      if (!config.barrierPenetrable) return barrier;
+      return IgnorePointer(child: barrier);
+    }
+
     // If a custom barrier builder is provided, delegate entirely to it.
     if (config.barrierBuilder != null) {
-      return config.barrierBuilder!(navigator!.context, animation!);
+      return applyBarrierPointerBehavior(
+        config.barrierBuilder!(navigator!.context, animation!),
+      );
     }
 
     // Build the base barrier color animation.
@@ -165,33 +172,35 @@ class _DrawerRoute<T> extends PopupRoute<T> {
         );
       }
 
-      return barrier;
+      return applyBarrierPointerBehavior(barrier);
     }
 
-    return AnimatedBuilder(
-      animation: animation!,
-      builder: (context, child) {
-        Widget barrier = GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Container(
-            color: Color.lerp(
-              Colors.transparent,
-              barrierColor,
-              animation!.value,
+    return applyBarrierPointerBehavior(
+      AnimatedBuilder(
+        animation: animation!,
+        builder: (context, child) {
+          Widget barrier = GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              color: Color.lerp(
+                Colors.transparent,
+                barrierColor,
+                animation!.value,
+              ),
             ),
-          ),
-        );
-
-        if (config.backdropBlur > 0) {
-          final sigma = config.backdropBlur * animation!.value;
-          barrier = BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-            child: barrier,
           );
-        }
 
-        return barrier;
-      },
+          if (config.backdropBlur > 0) {
+            final sigma = config.backdropBlur * animation!.value;
+            barrier = BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+              child: barrier,
+            );
+          }
+
+          return barrier;
+        },
+      ),
     );
   }
 
