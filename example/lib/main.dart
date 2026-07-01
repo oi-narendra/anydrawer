@@ -1088,7 +1088,7 @@ class _DialogDemoDrawerContent extends StatelessWidget {
               showAboutDialog(
                 context: context,
                 applicationName: 'AnyDrawer',
-                applicationVersion: '2.0.0',
+                applicationVersion: '2.1.0',
                 children: [
                   const Text('Dialogs work seamlessly inside drawers.'),
                 ],

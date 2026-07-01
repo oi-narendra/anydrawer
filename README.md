@@ -52,6 +52,7 @@ Flutter's built-in `Drawer` widget is tied to `Scaffold`, limited to left/right,
 | Width constraints (min/max)    | ❌                 | ✅                |
 | Custom animation curve         | ❌                 | ✅                |
 | Works with dialogs on top      | ❌                 | ✅                |
+| Barrier tap-through            | ❌                 | ✅                |
 | Accessibility (semantics)      | Partial            | ✅                |
 
 ---
@@ -69,6 +70,7 @@ Flutter's built-in `Drawer` widget is tied to `Scaffold`, limited to left/right,
 - 👆 **Swipe-from-edge** — `AnyDrawerRegion` detects edge swipes to open
 - ✨ **Elevation & shadow** — Material shadow on the drawer edge
 - 🎨 **Custom barrier** — provide your own barrier widget
+- 👆 **Barrier tap-through** — `barrierPenetrable` lets taps reach widgets behind the drawer
 - ⌨️ **Close on Escape / Back** — keyboard and Android back button
 - 📐 **Width constraints** — `maxWidth` and `minWidth` for responsive layouts
 - ♿ **Accessibility** — built-in semantics label support
@@ -99,7 +101,7 @@ Flutter's built-in `Drawer` widget is tied to `Scaffold`, limited to left/right,
 
 ```yaml
 dependencies:
-  anydrawer: ^2.0.0
+  anydrawer: ^2.1.0
 ```
 
 ```bash
