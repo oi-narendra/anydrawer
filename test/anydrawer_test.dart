@@ -645,7 +645,6 @@ void main() {
                             );
                           },
                           config: const DrawerConfig(
-                            side: DrawerSide.right,
                             barrierPenetrable: true,
                           ),
                         ),

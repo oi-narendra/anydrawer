@@ -199,7 +199,7 @@ class _DrawerRoute<T> extends PopupRoute<T> {
             barrier = BackdropFilter(
               filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
               child: barrier,
-            ),
+            );
           }
 
           return barrier;
