@@ -621,6 +621,64 @@ void main() {
     expect(find.byType(BackdropFilter), findsOneWidget);
   });
 
+  testWidgets('barrierPenetrable allows tapping widgets behind drawer', (
+    tester,
+  ) async {
+    var counter = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (context, setState) {
+            return Scaffold(
+              body: Column(
+                children: [
+                  Text('Counter: $counter'),
+                  ElevatedButton(
+                    onPressed: () {
+                      unawaited(
+                        showDrawer<void>(
+                          context,
+                          builder: (context) {
+                            return const Center(
+                              child: Text('Test Drawer'),
+                            );
+                          },
+                          config: const DrawerConfig(
+                            barrierPenetrable: true,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Show Drawer'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() => counter++);
+                    },
+                    child: const Text('Behind Button'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Show Drawer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Test Drawer'), findsOneWidget);
+    expect(find.text('Counter: 0'), findsOneWidget);
+
+    await tester.tap(find.text('Behind Button'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Counter: 1'), findsOneWidget);
+    expect(find.text('Test Drawer'), findsOneWidget);
+  });
+
   testWidgets('elevation renders Material widget with elevation', (
     tester,
   ) async {

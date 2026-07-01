@@ -61,6 +61,9 @@ typedef BarrierBuilder = Widget Function(
 /// When set, [backdropOpacity], [backdropBlur], and [closeOnClickOutside]
 /// are ignored and the barrier is fully user-controlled.
 ///
+/// [barrierPenetrable] allows pointer events to pass through the barrier to
+/// widgets behind the drawer route.
+///
 /// [semanticsLabel] is the accessibility label announced for the drawer.
 ///
 /// [resizable] enables animated width transitions at runtime. Defaults to
@@ -86,6 +89,7 @@ class DrawerConfig {
     this.elevation = 0.0,
     this.shadowColor,
     this.barrierBuilder,
+    this.barrierPenetrable = false,
     this.semanticsLabel,
     this.resizable = false,
   })  : assert(
@@ -175,6 +179,12 @@ class DrawerConfig {
   /// dismiss behaviour.
   final BarrierBuilder? barrierBuilder;
 
+  /// Whether pointer events should pass through the barrier.
+  ///
+  /// When true, taps outside the drawer are not intercepted by the barrier.
+  /// In this mode, [closeOnClickOutside] has no effect.
+  final bool barrierPenetrable;
+
   /// Accessibility label announced for the drawer.
   final String? semanticsLabel;
 
@@ -201,6 +211,7 @@ class DrawerConfig {
     double? elevation,
     Color? shadowColor,
     BarrierBuilder? barrierBuilder,
+    bool? barrierPenetrable,
     String? semanticsLabel,
     bool? resizable,
   }) {
@@ -223,6 +234,7 @@ class DrawerConfig {
       elevation: elevation ?? this.elevation,
       shadowColor: shadowColor ?? this.shadowColor,
       barrierBuilder: barrierBuilder ?? this.barrierBuilder,
+      barrierPenetrable: barrierPenetrable ?? this.barrierPenetrable,
       semanticsLabel: semanticsLabel ?? this.semanticsLabel,
       resizable: resizable ?? this.resizable,
     );
@@ -247,6 +259,7 @@ class DrawerConfig {
         minWidth: $minWidth,
         elevation: $elevation,
         shadowColor: $shadowColor,
+        barrierPenetrable: $barrierPenetrable,
         semanticsLabel: $semanticsLabel,
         resizable: $resizable,
       )
