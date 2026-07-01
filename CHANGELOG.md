@@ -1,3 +1,14 @@
+## 2.1.0
+
+### 🚀 New Features
+
+- **Barrier gesture penetration** — `DrawerConfig.barrierPenetrable` lets pointer events pass through the backdrop to widgets behind the drawer ([#6](https://github.com/oi-narendra/anydrawer/issues/6)).
+
+### 🔧 Maintenance
+
+- Narrowed Dart SDK upper bound from `<5.0.0` to `<4.0.0`.
+- Updated `very_good_analysis` to 10.3.0 and refreshed lockfile dependencies.
+
 ## 2.0.0
 
 ### ⚠️ Breaking Changes
