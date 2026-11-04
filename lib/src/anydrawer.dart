@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:anydrawer/anydrawer.dart';
 import 'package:flutter/material.dart';
 
+part 'any_drawer_widget.dart';
+
 /// Type definition for the drawer builder.
 /// The [context] is the build context
 typedef DrawerBuilder = Widget Function(BuildContext context);
@@ -463,7 +465,7 @@ class _DrawerContentState extends State<_DrawerContent>
     if (animController.value < 0.5) {
       _closeDrawer();
     } else {
-      unawaited(animController.forward());
+      animController.forward();
     }
   }
 

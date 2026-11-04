@@ -1,7 +1,4 @@
-import 'dart:async' show unawaited;
-
-import 'package:anydrawer/anydrawer.dart';
-import 'package:flutter/material.dart';
+part of 'anydrawer.dart';
 
 /// A declarative widget wrapper around [showDrawer].
 ///
@@ -70,7 +67,7 @@ class AnyDrawer extends StatefulWidget {
 }
 
 class _AnyDrawerState extends State<AnyDrawer> {
-  bool _isShowing = false;
+  _DrawerRoute<void>? _route;
 
   @override
   void initState() {
@@ -92,18 +89,36 @@ class _AnyDrawerState extends State<AnyDrawer> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_onControllerChanged);
+      _removeDrawer();
       widget.controller.addListener(_onControllerChanged);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onControllerChanged();
+      });
     }
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_onControllerChanged);
+    _removeDrawer();
     super.dispose();
   }
 
+  void _removeDrawer() {
+    final route = _route;
+    _route = null;
+    if (route == null) return;
+    // Widget disposal can happen while the navigator is building or locked.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final navigator = route.navigator;
+      if (navigator != null && navigator.mounted && route.isActive) {
+        navigator.removeRoute(route);
+      }
+    });
+  }
+
   void _onControllerChanged() {
-    if (widget.controller.isOpen && !_isShowing) {
+    if (widget.controller.isOpen && _route == null) {
       _show();
     }
     // Closing is handled by the controller listener inside showDrawer.
@@ -111,28 +126,30 @@ class _AnyDrawerState extends State<AnyDrawer> {
 
   void _show() {
     if (!mounted) return;
-    _isShowing = true;
-
-    unawaited(
-      showDrawer<void>(
-        context,
-        builder: widget.builder,
-        config: widget.config,
-        controller: widget.controller,
-        onDragUpdate: widget.onDragUpdate,
-        onDragEnd: widget.onDragEnd,
-        onOpen: widget.onOpen,
-        onClose: () {
-          _isShowing = false;
-          // Sync controller state if the drawer was dismissed externally
-          // (tap outside, escape key, back button).
-          if (widget.controller.isOpen) {
-            widget.controller.close();
-          }
-          widget.onClose?.call();
-        },
-      ),
+    final controller = widget.controller;
+    late final _DrawerRoute<void> route;
+    route = _DrawerRoute<void>(
+      drawerBuilder: widget.builder,
+      config: widget.config ?? const DrawerConfig(),
+      drawerController: controller,
+      onDragUpdate: widget.onDragUpdate,
+      onDragEnd: widget.onDragEnd,
+      onOpen: () {
+        if (mounted && _route == route) widget.onOpen?.call();
+      },
+      onClose: () {
+        if (!mounted || _route != route) return;
+        _route = null;
+        // Sync controller state if the drawer was dismissed externally
+        // (tap outside, escape key, back button).
+        if (controller.isOpen) {
+          controller.close();
+        }
+        widget.onClose?.call();
+      },
     );
+    _route = route;
+    Navigator.of(context).push<void>(route);
   }
 
   @override

@@ -32,7 +32,6 @@
 library;
 
 export 'src/any_drawer_region.dart';
-export 'src/any_drawer_widget.dart';
 export 'src/anydrawer.dart';
 export 'src/anydrawer_controller.dart';
 export 'src/drawer_config.dart';

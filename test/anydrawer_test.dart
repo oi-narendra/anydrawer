@@ -907,7 +907,7 @@ void main() {
     expect(find.text('Declarative Drawer'), findsOneWidget);
 
     // Close via controller
-    await tester.tap(find.text('Close Btn'));
+    controller.close();
     await tester.pumpAndSettle();
 
     expect(find.text('Declarative Drawer'), findsNothing);
