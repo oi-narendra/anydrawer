@@ -459,3 +459,26 @@ CI checks formatting, analysis, package and example tests, the example web build
 and a publish dry run. A separate job tests the minimum supported Flutter SDK.
 Version tags must match `pubspec.yaml` and point to a commit on `main`; publishing
 only runs after all checks pass.
+
+### Keyboard and unsaved changes
+
+Drawers stay above the keyboard by default. Use scrollable content for long
+forms. Set `DrawerConfig(resizeToAvoidBottomInset: false)` to handle keyboard
+insets yourself.
+
+Pass `onWillClose` to `showDrawer`, `AnyDrawer`, or `AnyDrawerRegion` to confirm
+closing. Return `true` to close or `false` to keep editing; async dialogs work too.
+
+```dart
+showDrawer<void>(
+  context,
+  onWillClose: () async => !hasChanges || await confirmDiscard(),
+  builder: (context) => const MyForm(),
+);
+```
+
+The guard covers backdrop, swipe, Escape/back, controller, and `Navigator.pop`
+dismissals. Repeated requests wait for the current check. A thrown error keeps
+the drawer open and is reported to Flutter. Removing the route or its owning
+widget still cleans up immediately. The Form Drawer example shows confirmation
+and keyboard handling together.

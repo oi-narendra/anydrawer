@@ -34,6 +34,7 @@ class AnyDrawerRegion extends StatefulWidget {
     this.swipeThreshold = 30.0,
     this.onOpen,
     this.onClose,
+    this.onWillClose,
     super.key,
   });
 
@@ -65,6 +66,9 @@ class AnyDrawerRegion extends StatefulWidget {
 
   /// Called when the drawer finishes closing.
   final VoidCallback? onClose;
+
+  /// Checks whether dismissal is allowed. See [showDrawer].
+  final DrawerCloseGuard? onWillClose;
 
   @override
   State<AnyDrawerRegion> createState() => _AnyDrawerRegionState();
@@ -164,6 +168,7 @@ class _AnyDrawerRegionState extends State<AnyDrawerRegion> {
         builder: widget.builder,
         config: config,
         onOpen: widget.onOpen,
+        onWillClose: widget.onWillClose,
         onClose: () {
           _drawerOpen = false;
           widget.onClose?.call();

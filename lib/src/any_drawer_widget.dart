@@ -36,6 +36,7 @@ class AnyDrawer extends StatefulWidget {
     this.config,
     this.onOpen,
     this.onClose,
+    this.onWillClose,
     this.onDragUpdate,
     this.onDragEnd,
     super.key,
@@ -55,6 +56,9 @@ class AnyDrawer extends StatefulWidget {
 
   /// Called when the drawer finishes closing.
   final VoidCallback? onClose;
+
+  /// Checks whether dismissal is allowed. See [showDrawer].
+  final DrawerCloseGuard? onWillClose;
 
   /// Called during a drag gesture on the drawer.
   final DrawerDragCallback? onDragUpdate;
@@ -132,6 +136,7 @@ class _AnyDrawerState extends State<AnyDrawer> {
       drawerBuilder: widget.builder,
       config: widget.config ?? const DrawerConfig(),
       drawerController: controller,
+      onWillClose: () => widget.onWillClose?.call() ?? true,
       onDragUpdate: widget.onDragUpdate,
       onDragEnd: widget.onDragEnd,
       onOpen: () {

@@ -92,6 +92,7 @@ class DrawerConfig {
     this.barrierPenetrable = false,
     this.semanticsLabel,
     this.resizable = false,
+    this.resizeToAvoidBottomInset = true,
   })  : assert(
           widthPercentage == null ||
               (widthPercentage >= 0.1 && widthPercentage <= 0.99),
@@ -191,6 +192,11 @@ class DrawerConfig {
   /// Whether the drawer supports animated runtime width changes.
   final bool resizable;
 
+  /// Keep the drawer above the keyboard and constrain it to the visible area.
+  ///
+  /// Defaults to true. Use scrollable content for forms taller than the drawer.
+  final bool resizeToAvoidBottomInset;
+
   /// copyWith method
   DrawerConfig copyWith({
     double? widthPercentage,
@@ -214,6 +220,7 @@ class DrawerConfig {
     bool? barrierPenetrable,
     String? semanticsLabel,
     bool? resizable,
+    bool? resizeToAvoidBottomInset,
   }) {
     return DrawerConfig(
       widthPercentage: widthPercentage ?? this.widthPercentage,
@@ -237,6 +244,8 @@ class DrawerConfig {
       barrierPenetrable: barrierPenetrable ?? this.barrierPenetrable,
       semanticsLabel: semanticsLabel ?? this.semanticsLabel,
       resizable: resizable ?? this.resizable,
+      resizeToAvoidBottomInset:
+          resizeToAvoidBottomInset ?? this.resizeToAvoidBottomInset,
     );
   }
 
@@ -262,6 +271,7 @@ class DrawerConfig {
         barrierPenetrable: $barrierPenetrable,
         semanticsLabel: $semanticsLabel,
         resizable: $resizable,
+        resizeToAvoidBottomInset: $resizeToAvoidBottomInset,
       )
     ''';
   }

@@ -10,6 +10,10 @@ part 'any_drawer_widget.dart';
 /// The [context] is the build context
 typedef DrawerBuilder = Widget Function(BuildContext context);
 
+/// Return true to close the drawer, or false to keep it open.
+/// May show a confirmation dialog. Concurrent close requests share one check.
+typedef DrawerCloseGuard = FutureOr<bool> Function();
+
 /// Callback signature for drag events on the drawer.
 typedef DrawerDragCallback = void Function(DragUpdateDetails details);
 
@@ -32,6 +36,10 @@ typedef DrawerDragEndCallback = void Function(DragEndDetails details);
 /// [onOpen] is the callback function when the drawer is opened.
 ///
 /// [onClose] is the callback function when the drawer is closed.
+///
+/// [onWillClose] can veto dismissal, including controller and Navigator pops.
+/// Removing the route or its owning widget bypasses the guard. If the guard
+/// throws, the drawer stays open and the error is reported to Flutter.
 ///
 /// [controller] is the drawer controller.
 /// Use this controller to close the drawer programmatically.
@@ -69,6 +77,7 @@ Future<T?> showDrawer<T>(
   required DrawerBuilder builder,
   void Function()? onOpen,
   void Function()? onClose,
+  DrawerCloseGuard? onWillClose,
   DrawerConfig? config,
   AnyDrawerController? controller,
   DrawerDragCallback? onDragUpdate,
@@ -82,6 +91,7 @@ Future<T?> showDrawer<T>(
       config: config,
       onOpen: onOpen,
       onClose: onClose,
+      onWillClose: onWillClose,
       drawerController: controller,
       onDragUpdate: onDragUpdate,
       onDragEnd: onDragEnd,
@@ -102,6 +112,7 @@ class _DrawerRoute<T> extends PopupRoute<T> {
     required this.config,
     this.onOpen,
     this.onClose,
+    this.onWillClose,
     this.drawerController,
     this.onDragUpdate,
     this.onDragEnd,
@@ -111,6 +122,10 @@ class _DrawerRoute<T> extends PopupRoute<T> {
   final DrawerConfig config;
   final VoidCallback? onOpen;
   final VoidCallback? onClose;
+  final DrawerCloseGuard? onWillClose;
+  bool _closePending = false;
+  bool _allowPop = false;
+  bool _disposed = false;
   final AnyDrawerController? drawerController;
   final DrawerDragCallback? onDragUpdate;
   final DrawerDragEndCallback? onDragEnd;
@@ -134,11 +149,7 @@ class _DrawerRoute<T> extends PopupRoute<T> {
   @override
   Duration get transitionDuration => config.animationDuration;
 
-  /// Custom barrier that calls [Navigator.pop] directly instead of
-  /// [Navigator.maybePop]. This bypasses [PopScope]'s `canPop: false` so
-  /// that barrier taps always dismiss the drawer when `closeOnClickOutside`
-  /// is true, while system Escape/back button pops are still controlled
-  /// by the [PopScope] in the content widget.
+  /// Barrier taps use the same close guard as other dismissal requests.
   @override
   Widget buildModalBarrier() {
     Widget applyBarrierPointerBehavior(Widget barrier) {
@@ -192,7 +203,7 @@ class _DrawerRoute<T> extends PopupRoute<T> {
           Widget barrier = config.barrierPenetrable
               ? barrierSurface
               : GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
+                  onTap: () => unawaited(requestClose()),
                   child: barrierSurface,
                 );
 
@@ -218,15 +229,64 @@ class _DrawerRoute<T> extends PopupRoute<T> {
     return result;
   }
 
+  /// Requests dismissal without accidentally popping a route above this one.
+  Future<void> requestClose([T? result]) async {
+    if (_disposed || _closePending) return;
+    _closePending = true;
+    var approved = false;
+    try {
+      // Navigator.pop calls didPop while the navigator is locked.
+      await Future<void>.value();
+      if (_disposed || !isActive || !isCurrent) return;
+      approved = await (onWillClose?.call() ?? true);
+      if (_disposed || !isActive) return;
+      if (approved && isCurrent) {
+        _allowPop = true;
+        navigator!.pop<T>(result);
+        approved = !isActive;
+      } else {
+        approved = false;
+      }
+    } on Object catch (error, stack) {
+      approved = false;
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'anydrawer',
+          context:
+              ErrorDescription('while checking whether a drawer can close'),
+        ),
+      );
+    } finally {
+      _closePending = false;
+      if (!_disposed && isActive && !approved) {
+        controller?.forward();
+        drawerController?.open();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
   @override
   bool didPop(T? result) {
-    // Defer onClose to avoid calling it during notifyListeners()
-    // when the controller triggers the close.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      onClose?.call();
-    });
+    if (onWillClose != null && !_allowPop) {
+      unawaited(requestClose(result));
+      return false;
+    }
 
-    return super.didPop(result);
+    _allowPop = false;
+    final popped = super.didPop(result);
+    if (popped) {
+      // Defer callbacks until controller notifications and navigation finish.
+      WidgetsBinding.instance.addPostFrameCallback((_) => onClose?.call());
+    }
+    return popped;
   }
 
   @override
@@ -236,6 +296,10 @@ class _DrawerRoute<T> extends PopupRoute<T> {
     Animation<double> secondaryAnimation,
   ) {
     final size = MediaQuery.sizeOf(context);
+    final bottomInset = config.resizeToAvoidBottomInset
+        ? MediaQuery.viewInsetsOf(context).bottom.clamp(0.0, size.height)
+        : 0.0;
+    final availableHeight = size.height - bottomInset;
     final side = config.side ?? DrawerSide.right;
     final horizontal = _isHorizontal(side);
 
@@ -247,7 +311,7 @@ class _DrawerRoute<T> extends PopupRoute<T> {
 
     if (horizontal) {
       primarySize = size.width * percentage;
-      crossSize = size.height;
+      crossSize = availableHeight;
     } else {
       primarySize = size.height * percentage;
       crossSize = size.width;
@@ -261,7 +325,11 @@ class _DrawerRoute<T> extends PopupRoute<T> {
       primarySize = config.minWidth!;
     }
 
-    return _DrawerContent(
+    if (!horizontal && config.resizeToAvoidBottomInset) {
+      primarySize = primarySize.clamp(0.0, availableHeight);
+    }
+
+    final content = _DrawerContent(
       config: config,
       primarySize: primarySize,
       crossSize: crossSize,
@@ -271,6 +339,13 @@ class _DrawerRoute<T> extends PopupRoute<T> {
       onDragUpdate: onDragUpdate,
       onDragEnd: onDragEnd,
     );
+    return config.resizeToAvoidBottomInset
+        ? MediaQuery.removeViewInsets(
+            context: context,
+            removeBottom: true,
+            child: content,
+          )
+        : content;
   }
 
   @override
@@ -307,13 +382,22 @@ class _DrawerRoute<T> extends PopupRoute<T> {
       CurvedAnimation(parent: animation, curve: config.curve),
     );
 
-    return Align(
-      alignment: alignment,
-      widthFactor: 0,
-      heightFactor: 0,
-      child: SlideTransition(
-        position: slideAnimation,
-        child: child,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: config.resizeToAvoidBottomInset
+            ? MediaQuery.viewInsetsOf(context)
+                .bottom
+                .clamp(0.0, MediaQuery.sizeOf(context).height)
+            : 0,
+      ),
+      child: Align(
+        alignment: alignment,
+        widthFactor: 0,
+        heightFactor: 0,
+        child: SlideTransition(
+          position: slideAnimation,
+          child: child,
+        ),
       ),
     );
   }
@@ -375,7 +459,6 @@ class _DrawerContent extends StatefulWidget {
 
 class _DrawerContentState extends State<_DrawerContent>
     with WidgetsBindingObserver {
-  bool _popping = false;
   AnyDrawerController? _internalController;
 
   bool get _isHorizontalDrawer =>
@@ -393,6 +476,25 @@ class _DrawerContentState extends State<_DrawerContent>
 
     if (widget.config.closeOnResume) {
       WidgetsBinding.instance.addObserver(this);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _DrawerContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.config.resizeToAvoidBottomInset &&
+        (oldWidget.primarySize != widget.primarySize ||
+            oldWidget.crossSize != widget.crossSize)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final focusedContext = FocusManager.instance.primaryFocus?.context;
+        if (focusedContext != null &&
+            focusedContext.mounted &&
+            focusedContext.findAncestorStateOfType<_DrawerContentState>() ==
+                this) {
+          Scrollable.ensureVisible(focusedContext);
+        }
+      });
     }
   }
 
@@ -424,17 +526,18 @@ class _DrawerContentState extends State<_DrawerContent>
   }
 
   void _closeDrawer() {
-    if (!_popping && mounted) {
-      _popping = true;
-      Navigator.of(context).pop();
-    }
+    unawaited(widget.route.requestClose());
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
     widget.onDragUpdate?.call(details);
 
     final animController = widget.route.animationController;
-    if (animController == null) return;
+    if (animController == null ||
+        widget.route._closePending ||
+        widget.primarySize <= 0) {
+      return;
+    }
 
     final delta = details.primaryDelta!;
     final position = animController.value;
@@ -534,14 +637,24 @@ class _DrawerContentState extends State<_DrawerContent>
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        // System-initiated pop (Escape key or Android back button)
-        if (widget.config.closeOnEscapeKey || widget.config.closeOnBackButton) {
-          _closeDrawer();
+        // Back-button and Navigator.maybePop requests.
+        if (widget.config.closeOnBackButton) {
+          unawaited(widget.route.requestClose(result));
         }
       },
-      child: drawerWidget,
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          DismissIntent: CallbackAction<DismissIntent>(
+            onInvoke: (_) {
+              if (widget.config.closeOnEscapeKey) _closeDrawer();
+              return null;
+            },
+          ),
+        },
+        child: Focus(autofocus: true, child: drawerWidget),
+      ),
     );
   }
 }

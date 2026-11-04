@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
     _UseCase(
       icon: Icons.edit_note,
       title: 'Form Drawer',
-      subtitle: 'Contact form in a drawer',
+      subtitle: 'Keyboard-aware form with discard confirmation',
       color: _seed(1),
       onTap: _showFormDrawer,
     ),
@@ -291,11 +291,44 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showFormDrawer() {
+    var dirty = false;
     unawaited(
       showDrawer<void>(
         context,
-        builder: (context) => const _FormDrawerContent(),
-        config: _config,
+        builder: (drawerContext) => _FormDrawerContent(
+          onChanged: () => dirty = true,
+          onSubmit: () {
+            dirty = false;
+            Navigator.of(drawerContext).pop();
+          },
+        ),
+        config: _config.copyWith(
+          side: DrawerSide.bottom,
+          widthPercentage: 0.8,
+          enableEdgeDrag: true,
+          closeOnBackButton: true,
+        ),
+        onWillClose: () async {
+          if (!dirty) return true;
+          return await showDialog<bool>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('Discard changes?'),
+                  content: const Text('Your message has not been submitted.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('Keep editing'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text('Discard'),
+                    ),
+                  ],
+                ),
+              ) ??
+              false;
+        },
       ),
     );
   }
@@ -928,7 +961,10 @@ class _NavItem extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _FormDrawerContent extends StatelessWidget {
-  const _FormDrawerContent();
+  const _FormDrawerContent({required this.onChanged, required this.onSubmit});
+
+  final VoidCallback onChanged;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -937,7 +973,14 @@ class _FormDrawerContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 40),
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              tooltip: 'Close form',
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.close),
+            ),
+          ),
           Text(
             'Contact Us',
             style: Theme.of(context)
@@ -952,6 +995,7 @@ class _FormDrawerContent extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           TextFormField(
+            onChanged: (_) => onChanged(),
             decoration: const InputDecoration(
               labelText: 'Full Name',
               prefixIcon: Icon(Icons.person_outline),
@@ -960,6 +1004,7 @@ class _FormDrawerContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           TextFormField(
+            onChanged: (_) => onChanged(),
             decoration: const InputDecoration(
               labelText: 'Email',
               prefixIcon: Icon(Icons.email_outlined),
@@ -979,10 +1024,11 @@ class _FormDrawerContent extends StatelessWidget {
               DropdownMenuItem(value: 'support', child: Text('Support')),
               DropdownMenuItem(value: 'feedback', child: Text('Feedback')),
             ],
-            onChanged: (_) {},
+            onChanged: (_) => onChanged(),
           ),
           const SizedBox(height: 16),
           TextFormField(
+            onChanged: (_) => onChanged(),
             maxLines: 4,
             decoration: const InputDecoration(
               labelText: 'Message',
@@ -993,7 +1039,7 @@ class _FormDrawerContent extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: onSubmit,
             icon: const Icon(Icons.send),
             label: const Text('Submit'),
           ),
