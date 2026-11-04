@@ -36,3 +36,6 @@ build/
 # Generated platform files are not part of this Flutter widget package.
 /ios/
 /macos/
+/android/
+/linux/
+/windows/
