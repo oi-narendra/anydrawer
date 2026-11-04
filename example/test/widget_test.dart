@@ -66,4 +66,24 @@ void main() {
     expect(find.text('Discard changes?'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('snap example expands with handle and scrolls independently',
+      (tester) async {
+    await tester.pumpWidget(const MyApp());
+    await tester.ensureVisible(find.text('Snap Drawer'));
+    await tester.tap(find.text('Snap Drawer'));
+    await tester.pumpAndSettle();
+    final handle = find.bySemanticsLabel('Resize drawer');
+    expect(tester.getSize(find.byType(Drawer)).height, 150);
+    await tester.tap(handle);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(Drawer)).height, 300);
+    await tester.drag(find.byType(ListView).last, const Offset(0, -200));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(Drawer)).height, 300);
+    await tester.tap(handle);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(Drawer)).height, 600);
+    expect(tester.takeException(), isNull);
+  });
 }

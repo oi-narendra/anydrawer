@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add snap heights and an accessible resize handle for top and bottom drawers.
 - Keep drawers above the keyboard, with an option to disable resizing.
 - Add `onWillClose` for confirming or preventing dismissal.
 - Handle Escape and back-button settings independently.

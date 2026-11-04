@@ -103,6 +103,13 @@ class _HomePageState extends State<HomePage> {
       onTap: _showFormDrawer,
     ),
     _UseCase(
+      icon: Icons.drag_handle,
+      title: 'Snap Drawer',
+      subtitle: 'Drag or tap the handle to resize',
+      color: _seed(1),
+      onTap: _showSnapDrawer,
+    ),
+    _UseCase(
       icon: Icons.layers,
       title: 'Dialog over Drawer',
       subtitle: 'Show dialogs on top',
@@ -290,6 +297,54 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _showSnapDrawer() {
+    unawaited(
+      showDrawer<void>(
+        context,
+        config: const DrawerConfig(
+          side: DrawerSide.bottom,
+          snapSizes: [0.25, 0.5, 1],
+          dragEnabled: true,
+          closeOnBackButton: true,
+        ),
+        builder: (_) => SafeArea(
+          top: false,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(
+                'Explore nearby',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              const Text('Drag the handle to 25%, 50%, or full height. '
+                  'Scroll this list without resizing the drawer.'),
+              const SizedBox(height: 16),
+              for (final place in [
+                'Botanical gardens',
+                'Riverside walk',
+                'City museum',
+                'Weekend market',
+                'Art gallery',
+                'Harbour lookout',
+                'Public library',
+                'Coastal trail',
+                'Historic quarter',
+                'Community theatre',
+                'Sculpture park',
+                'Beach promenade',
+              ])
+                ListTile(
+                  leading: const Icon(Icons.place_outlined),
+                  title: Text(place),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showFormDrawer() {
     var dirty = false;
     unawaited(
@@ -305,6 +360,7 @@ class _HomePageState extends State<HomePage> {
         config: _config.copyWith(
           side: DrawerSide.bottom,
           widthPercentage: 0.8,
+          snapSizes: const [0.5, 0.8, 1],
           enableEdgeDrag: true,
           closeOnBackButton: true,
         ),

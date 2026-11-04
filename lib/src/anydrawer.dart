@@ -5,6 +5,7 @@ import 'package:anydrawer/anydrawer.dart';
 import 'package:flutter/material.dart';
 
 part 'any_drawer_widget.dart';
+part 'snap_drawer.dart';
 
 /// Type definition for the drawer builder.
 /// The [context] is the build context
@@ -116,10 +117,11 @@ class _DrawerRoute<T> extends PopupRoute<T> {
     this.drawerController,
     this.onDragUpdate,
     this.onDragEnd,
-  });
+  }) : snapSizes = _validateSnapSizes(config);
 
   final DrawerBuilder drawerBuilder;
   final DrawerConfig config;
+  final List<double>? snapSizes;
   final VoidCallback? onOpen;
   final VoidCallback? onClose;
   final DrawerCloseGuard? onWillClose;
@@ -329,16 +331,29 @@ class _DrawerRoute<T> extends PopupRoute<T> {
       primarySize = primarySize.clamp(0.0, availableHeight);
     }
 
-    final content = _DrawerContent(
-      config: config,
-      primarySize: primarySize,
-      crossSize: crossSize,
-      builder: drawerBuilder,
-      drawerController: drawerController,
-      route: this,
-      onDragUpdate: onDragUpdate,
-      onDragEnd: onDragEnd,
-    );
+    Widget buildContent(double extent, [Widget? handle]) => _DrawerContent(
+          config: config,
+          primarySize: extent,
+          crossSize: crossSize,
+          builder: drawerBuilder,
+          drawerController: drawerController,
+          route: this,
+          onDragUpdate: onDragUpdate,
+          onDragEnd: onDragEnd,
+          dragHandle: handle,
+        );
+    final content = snapSizes == null
+        ? buildContent(primarySize)
+        : _SnapDrawer(
+            sizes: snapSizes!,
+            availableExtent: availableHeight,
+            config: config,
+            canResize: () => !_closePending && isCurrent,
+            onDismiss: () => unawaited(requestClose()),
+            onDragUpdate: onDragUpdate,
+            onDragEnd: onDragEnd,
+            builder: buildContent,
+          );
     return config.resizeToAvoidBottomInset
         ? MediaQuery.removeViewInsets(
             context: context,
@@ -442,8 +457,10 @@ class _DrawerContent extends StatefulWidget {
     this.drawerController,
     this.onDragUpdate,
     this.onDragEnd,
+    this.dragHandle,
   });
 
+  final Widget? dragHandle;
   final DrawerConfig config;
   final double primarySize;
   final double crossSize;
@@ -590,6 +607,19 @@ class _DrawerContentState extends State<_DrawerContent>
       height = widget.primarySize;
     }
 
+    Widget buildBody() {
+      final content = widget.builder(context);
+      if (widget.dragHandle == null) return content;
+      final children = [
+        widget.dragHandle!,
+        Expanded(child: ClipRect(child: content)),
+      ];
+      return Column(
+        children:
+            side == DrawerSide.top ? children.reversed.toList() : children,
+      );
+    }
+
     Widget drawerWidget = SizedBox(
       width: width,
       height: height,
@@ -600,15 +630,15 @@ class _DrawerContentState extends State<_DrawerContent>
                   widget.config.shadowColor ?? Theme.of(context).shadowColor,
               shape: RoundedRectangleBorder(borderRadius: borderRadius),
               clipBehavior: Clip.antiAlias,
-              child: widget.builder(context),
+              child: buildBody(),
             )
           : Drawer(
               shape: RoundedRectangleBorder(borderRadius: borderRadius),
-              child: widget.builder(context),
+              child: buildBody(),
             ),
     );
 
-    if (widget.config.dragEnabled == true) {
+    if (widget.config.dragEnabled == true && widget.dragHandle == null) {
       if (horizontal) {
         drawerWidget = GestureDetector(
           onHorizontalDragUpdate: _handleDragUpdate,
