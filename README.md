@@ -450,3 +450,12 @@ If you find this package useful, consider:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Development
+
+Requires Flutter 3.27.4 or later.
+
+CI checks formatting, analysis, package and example tests, the example web build,
+and a publish dry run. A separate job tests the minimum supported Flutter SDK.
+Version tags must match `pubspec.yaml` and point to a commit on `main`; publishing
+only runs after all checks pass.

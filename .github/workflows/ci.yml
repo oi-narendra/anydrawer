@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Format, analyze, test and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test example/lib example/test
+      - run: flutter analyze lib test
+      - run: flutter test
+      - run: flutter analyze lib test
+        working-directory: example
+      - run: flutter test
+        working-directory: example
+      - run: flutter build web --release
+        working-directory: example
+      - run: flutter pub publish --dry-run
+
+  minimum:
+    name: Minimum supported Flutter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.4'
+          cache: true
+      - run: bash tool/test_minimum.sh

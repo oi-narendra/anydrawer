@@ -2,7 +2,7 @@ name: anydrawer
 description: >-
   A Flutter drawer that slides from any edge. No Scaffold needed — backdrop blur,
   drag, return values, swipe-from-edge, multiple drawers, and declarative API.
-version: 2.1.0
+version: 2.1.1
 homepage: https://github.com/oi-narendra/anydrawer
 topics:
   - drawer
@@ -13,7 +13,7 @@ topics:
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
-  flutter: ">=2.17.0"
+  flutter: ">=3.27.4"
 
 dependencies:
   flutter:
