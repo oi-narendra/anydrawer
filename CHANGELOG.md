@@ -1,10 +1,8 @@
-## Unreleased
+## 2.1.1
 
 - Correct the minimum SDK to Flutter 3.27.4 / Dart 3.6.0 to match existing APIs.
 - Remove a declarative drawer's route when its widget is removed or its controller changes.
-- Fix the controller-close test and add lifecycle regression tests.
 - Add PR checks and validate tags before publishing.
-- Remove an unnecessary animation await wrapper.
 
 ## 2.1.0
 
