@@ -31,4 +31,4 @@ build/
 
 .vscode
 
-**/Flutter/ephemeral/
+**/Flutter/ephemeral/.swift_pm.lock
