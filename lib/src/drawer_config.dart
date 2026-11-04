@@ -92,6 +92,8 @@ class DrawerConfig {
     this.barrierPenetrable = false,
     this.semanticsLabel,
     this.resizable = false,
+    this.resizeToAvoidBottomInset = true,
+    this.snapSizes,
   })  : assert(
           widthPercentage == null ||
               (widthPercentage >= 0.1 && widthPercentage <= 0.99),
@@ -191,6 +193,20 @@ class DrawerConfig {
   /// Whether the drawer supports animated runtime width changes.
   final bool resizable;
 
+  /// Keep the drawer above the keyboard and constrain it to the visible area.
+  ///
+  /// Defaults to true. Use scrollable content for forms taller than the drawer.
+  final bool resizeToAvoidBottomInset;
+
+  /// Snap heights for top/bottom drawers, as fractions of the available height.
+  ///
+  /// Provide a non-empty, strictly increasing list in (0, 1]. The drawer opens
+  /// at the size nearest [widthPercentage], or the first size when omitted.
+  /// Set [dragEnabled] to true to resize using the built-in handle. Dragging
+  /// below half the smallest height requests dismissal through the close guard.
+  /// Left/right drawers do not support snap sizes.
+  final List<double>? snapSizes;
+
   /// copyWith method
   DrawerConfig copyWith({
     double? widthPercentage,
@@ -214,6 +230,8 @@ class DrawerConfig {
     bool? barrierPenetrable,
     String? semanticsLabel,
     bool? resizable,
+    bool? resizeToAvoidBottomInset,
+    List<double>? snapSizes,
   }) {
     return DrawerConfig(
       widthPercentage: widthPercentage ?? this.widthPercentage,
@@ -237,6 +255,9 @@ class DrawerConfig {
       barrierPenetrable: barrierPenetrable ?? this.barrierPenetrable,
       semanticsLabel: semanticsLabel ?? this.semanticsLabel,
       resizable: resizable ?? this.resizable,
+      resizeToAvoidBottomInset:
+          resizeToAvoidBottomInset ?? this.resizeToAvoidBottomInset,
+      snapSizes: snapSizes ?? this.snapSizes,
     );
   }
 
@@ -262,6 +283,8 @@ class DrawerConfig {
         barrierPenetrable: $barrierPenetrable,
         semanticsLabel: $semanticsLabel,
         resizable: $resizable,
+        resizeToAvoidBottomInset: $resizeToAvoidBottomInset,
+        snapSizes: $snapSizes,
       )
     ''';
   }

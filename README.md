@@ -459,3 +459,46 @@ CI checks formatting, analysis, package and example tests, the example web build
 and a publish dry run. A separate job tests the minimum supported Flutter SDK.
 Version tags must match `pubspec.yaml` and point to a commit on `main`; publishing
 only runs after all checks pass.
+
+### Keyboard and unsaved changes
+
+Drawers stay above the keyboard by default. Use scrollable content for long
+forms. Set `DrawerConfig(resizeToAvoidBottomInset: false)` to handle keyboard
+insets yourself.
+
+Pass `onWillClose` to `showDrawer`, `AnyDrawer`, or `AnyDrawerRegion` to confirm
+closing. Return `true` to close or `false` to keep editing; async dialogs work too.
+
+```dart
+showDrawer<void>(
+  context,
+  onWillClose: () async => !hasChanges || await confirmDiscard(),
+  builder: (context) => const MyForm(),
+);
+```
+
+The guard covers backdrop, swipe, Escape/back, controller, and `Navigator.pop`
+dismissals. Repeated requests wait for the current check. A thrown error keeps
+the drawer open and is reported to Flutter. Removing the route or its owning
+widget still cleans up immediately. The Form Drawer example shows confirmation
+and keyboard handling together.
+
+### Snap positions
+
+Top and bottom drawers can snap to a list of heights:
+
+```dart
+const DrawerConfig(
+  side: DrawerSide.bottom,
+  snapSizes: [0.25, 0.5, 1],
+  widthPercentage: 0.5, // Initial position; defaults to the first snap size.
+  dragEnabled: true,
+)
+```
+
+Drag the handle to resize, or tap it to cycle through positions. Content scrolls
+independently. Heights use the space available above the keyboard; the selected
+position is preserved when the keyboard closes or the device rotates. Snap sizes
+must be strictly increasing values greater than zero and at most one.
+Dragging below half the smallest height requests dismissal and respects
+`onWillClose`. See **Snap Drawer** and **Form Drawer** in the example.

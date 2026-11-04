@@ -1,3 +1,11 @@
+## Unreleased
+
+- Add snap heights and an accessible resize handle for top and bottom drawers.
+- Keep drawers above the keyboard, with an option to disable resizing.
+- Add `onWillClose` for confirming or preventing dismissal.
+- Handle Escape and back-button settings independently.
+- Update the form example with discard confirmation.
+
 ## 2.1.1
 
 - Correct the minimum SDK to Flutter 3.27.4 / Dart 3.6.0 to match existing APIs.
